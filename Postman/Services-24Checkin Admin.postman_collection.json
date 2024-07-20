@@ -1,0 +1,855 @@
+{
+	"info": {
+		"_postman_id": "de068088-2662-4a96-992d-02c8f6ddc2bf",
+		"name": "Services-24Checkin Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23633241"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData=pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"authorization_AdminApi\",responseData.token);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": \"h2techlabs_hasitha\",\r\n  \"password\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Auth/token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get User - Me",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/user/me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetReservation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"707924\",\r\n  \"lastName\" : \"Thomas\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"AR Kiosk-1\",\r\n  \"propertyCode\": \"Arena\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation"
+					]
+				},
+				"description": "Get reservation\n\nasasas"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reservations - Arriving",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/arriving/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"arriving",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				},
+				"description": "`/api/v1/reservation/arriving/{propertyId}/status=confirmed&needSync=false`\n\nReturns all reservations for today. If needSyncset to true, it will trigger latest arrivals from PMS. This might take some time. Use this flag if it is absolutely required.\n\npropertyId: propertyId\n\nstatus: confirmed/arrived/default:null\n\nneedSync: true/default:false"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reservations - Date Range",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/a8a68215-3332-416c-95ee-2ea7fafe4f3a?status=&startdate=2024-01-01&endDate=2024-01-28",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": ""
+						},
+						{
+							"key": "startdate",
+							"value": "2024-01-01"
+						},
+						{
+							"key": "endDate",
+							"value": "2024-01-28"
+						}
+					]
+				},
+				"description": "`/api/v1/reservation/arriving/{propertyId}/status=confirmed&needSync=false`\n\nReturns all reservations for today. If needSyncset to true, it will trigger latest arrivals from PMS. This might take some time. Use this flag if it is absolutely required.\n\npropertyId: propertyId\n\nstatus: confirmed/arrived/default:null\n\nneedSync: true/default:false"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Checkin Details - Arriving",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/checkins/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"checkins",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				},
+				"description": "`/api/v1/reservation/arriving/{propertyId}/status=confirmed&needSync=false`\n\nReturns all reservations for today. If needSyncset to true, it will trigger latest arrivals from PMS. This might take some time. Use this flag if it is absolutely required.\n\npropertyId: propertyId\n\nstatus: confirmed/arrived/default:null\n\nneedSync: true/default:false"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Checkin Details - Date Range",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/checkins/a8a68215-3332-416c-95ee-2ea7fafe4f3a?startDate=2024-01-30&endDate=2024-01-31",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"checkins",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2024-01-30"
+						},
+						{
+							"key": "endDate",
+							"value": "2024-01-31"
+						}
+					]
+				},
+				"description": "`/api/v1/reservation/arriving/{propertyId}/status=confirmed&needSync=false`\n\nReturns all reservations for today. If needSyncset to true, it will trigger latest arrivals from PMS. This might take some time. Use this flag if it is absolutely required.\n\npropertyId: propertyId\n\nstatus: confirmed/arrived/default:null\n\nneedSync: true/default:false"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"608609\",\r\n  \"lastName\" : \"Henry\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"FV Kiosk-1\",\r\n  \"propertyCode\": \"Fortitude\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Property/code/arena",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Property",
+						"code",
+						"arena"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property By Uuid",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"608609\",\r\n  \"lastName\" : \"Henry\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"FV Kiosk-1\",\r\n  \"propertyCode\": \"Fortitude\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Property/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Property",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property List",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"608609\",\r\n  \"lastName\" : \"Henry\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"FV Kiosk-1\",\r\n  \"propertyCode\": \"Fortitude\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Property",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Property"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Communications Confirmed - Arriving",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/communication/arriving/a8a68215-3332-416c-95ee-2ea7fafe4f3a?status=Confirmed",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"communication",
+						"arriving",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "Confirmed"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Communications PreCheckedIn - Arriving",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/communication/arriving/a8a68215-3332-416c-95ee-2ea7fafe4f3a?status=PreCheckedIn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"communication",
+						"arriving",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "PreCheckedIn"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCommunications - Date Range",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"608609\",\r\n  \"lastName\" : \"Henry\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"FV Kiosk-1\",\r\n  \"propertyCode\": \"Fortitude\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/communication/a8a68215-3332-416c-95ee-2ea7fafe4f3a?startdate=2024-02-08&endDate=2024-02-09&staus=",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"communication",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					],
+					"query": [
+						{
+							"key": "startdate",
+							"value": "2024-02-08"
+						},
+						{
+							"key": "endDate",
+							"value": "2024-02-09"
+						},
+						{
+							"key": "staus",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Communications - Reservation Id List",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"reservationId\": \"88d4e2f8-7e96-43b2-9348-44bf8c44cc10\",\r\n        \"email\": true,\r\n        \"sms\": true\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/communication/send/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"communication",
+						"send",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Communications PreCheckedIn- Reservation Id List",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"reservationId\": \"88d4e2f8-7e96-43b2-9348-44bf8c44cc10\",\r\n        \"email\": true\r\n    }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/communication/send/keypincode/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"communication",
+						"send",
+						"keypincode",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Keys For Reservations",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\"88d4e2f8-7e96-43b2-9348-44bf8c44cc10\"]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/KeyReservation/createkeys/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"KeyReservation",
+						"createkeys",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				},
+				"description": "Get reservation\n\nasasas"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Keys For Property",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/KeyReservation/e5c55589-e9f0-4074-9083-917b3a968179/deletekeys",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"KeyReservation",
+						"e5c55589-e9f0-4074-9083-917b3a968179",
+						"deletekeys"
+					]
+				},
+				"description": "Get reservation\n\nasasas"
+			},
+			"response": []
+		}
+	]
+}

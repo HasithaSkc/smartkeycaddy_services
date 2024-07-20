@@ -1,0 +1,540 @@
+{
+	"info": {
+		"_postman_id": "a3713347-5c13-417f-a306-3704ee85b0e6",
+		"name": "Services-24Checkin Online",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23633241"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData=pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"authorization_OnlineApi\",responseData.token);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"reservationId\": \"7c815b2e-dd3b-41a7-9aaf-891b152e9589\",\r\n  \"lastName\": \"BOTEJU\",\r\n  \"checkinDate\": \"2024-01-15\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Auth/onlinecheckin/token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Auth",
+								"onlinecheckin",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "QuickStream",
+			"item": [
+				{
+					"name": "Generate Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData=pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"singleUseTokenId\",responseData.singleUseTokenId);\r",
+									"console.log(responseData.singleUseTokenId)\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "C00776_SEC_45ypq47wtgxj2sp9cvqnv4bswa29xt2c9iwx6gekm7p8mm85j2w3hd77rfng",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountType\" : \"CREDIT_CARD\",\r\n    \"cardholderName\" : \"Amira Spenar\",\r\n    \"cardNumber\" : \"4242424242424242\",\r\n    \"expiryDateMonth\": \"12\",\r\n    \"expiryDateYear\": \"2027\",\r\n    \"cvn\": \"123\",\r\n    \"supplierBusinessCode\": \"C00776\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.quickstream.support.qvalent.com/rest/v1/single-use-tokens",
+							"protocol": "https",
+							"host": [
+								"api",
+								"quickstream",
+								"support",
+								"qvalent",
+								"com"
+							],
+							"path": [
+								"rest",
+								"v1",
+								"single-use-tokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment Gateway Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization_OnlineApi}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/payment/online/settings/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"online",
+								"settings",
+								"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Process Payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authorization_FunctionApp}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"singleUseTokenId\": \"{{singleUseTokenId}}\",\r\n    \"reservationId\": \"cfda9ffa-8366-47a1-99eb-71e039d020ef\",\r\n    \"propertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"preAuthAmount\": \"200\",\r\n    \"paymentAmount\": \"1000\",\r\n    \"sundries\": [\r\n        {\r\n            \"sundryId\": \"3ef28ff7-0457-42fe-aba1-119ba9727987\",\r\n            \"pmsSundryId\": 45,\r\n            \"sundryName\": \"Car Parking\",\r\n            \"amount\": 25.00,\r\n            \"isGstEnabled\": true,\r\n            \"isActive\": true,\r\n            \"isAddOnPaymentExempted\": false\r\n        },\r\n        {\r\n            \"sundryId\": \"dd4498bf-d610-4885-87b4-b77ae650cb6e\",\r\n            \"pmsSundryId\": 321,\r\n            \"sundryName\": \"Extra Bed\",\r\n            \"amount\": 30.00,\r\n            \"isGstEnabled\": true,\r\n            \"isActive\": true,\r\n            \"isAddOnPaymentExempted\": false\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/payment/online/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"online",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Reservation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_OnlineApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/online",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"online"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property Terms",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_OnlineApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/TermsAndConditons/a8a68215-3332-416c-95ee-2ea7fafe4f3a",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"TermsAndConditons",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Terms And Conditions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_OnlineApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reservationId\": \"7c815b2e-dd3b-41a7-9aaf-891b152e2589\",\r\n    \"propertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"signatureImage\": \"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\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/TermsAndConditons",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"TermsAndConditons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Id Validation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let lastName = \"Boteju\"\r",
+							"pm.environment.set(\"lastName\", lastName);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_OnlineApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "idDocument",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/document/validate/{{lastName}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document",
+						"validate",
+						"{{lastName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Id Status",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let lastName = \"Boteju\"\r",
+							"pm.environment.set(\"lastName\", lastName);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_OnlineApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reservationId\": \"39e4766e-1531-466a-969a-c9c61dc2ac7a\",\r\n    \"propertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"pmsReservationId\": \"smss\",\r\n    \"checkType\": \"\",\r\n    \"frontSideImage\" : \"\",\r\n    \"idNumber\" : \"\",\r\n    \"lastNameScanned\" : \"\",\r\n    \"isIdValidated\" : \"\",\r\n    \"idType\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/document/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"document",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Reservation Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reservationId\": \"11e35f9b-0be6-41d8-9f11-f72250a5eafd\",\r\n    \"propertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"status\": \"arrived\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Keypin Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reservationId\": \"11e35f9b-0be6-41d8-9f11-f72250a5eafd\",\r\n    \"propertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"status\": \"pinsent\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/pinstatus",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"pinstatus"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

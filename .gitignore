@@ -1,0 +1,49 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.orig
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+publish/
+
+obj
+packages
+/src/.vs/Corum.CCE
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessaratIdScanner.cs
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessData/eng.traineddata
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessData/eng.user-patterns
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessData/eng.user-words
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessData/osd.traineddata
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessData/pdf.ttf
+src/H2TechLabs.IdScanner.Domain/Tesseract/TessData/Configs/bazzar
+src/.vs/H2TechLabsIdScanner/DesignTimeBuild/.dtbcache.v2
+src/H2TechLabs.HotelCheckIn.Kiosk/Commands/ConfirmReservationCommand.cs
+*.vsidx
+<<<<<<< Updated upstream
+=======
+*.v2
+>>>>>>> Stashed changes
+*.lock
+*.v1
+*.testlog
+*.txt
+*.manifest
+*.csproj
+*.bin
+.vs/

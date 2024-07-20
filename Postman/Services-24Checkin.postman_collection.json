@@ -1,0 +1,528 @@
+{
+	"info": {
+		"_postman_id": "a58c885a-3939-4809-b108-8d7947f7b72b",
+		"name": "Services-24Checkin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23633241"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData=pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"authorization_AdminApi\",responseData.token);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": \"h2techlabs_hasitha\",\r\n  \"password\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Auth/token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Azure Functions App",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData=pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"authorization_AdminApi\",responseData.token);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userId\": \"function-admin\",\r\n  \"password\": \"*#2Sdf4509%UlJQQ39HjjkABlSaIo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl-FunctionApp}}/api/authtoken",
+							"host": [
+								"{{baseUrl-FunctionApp}}"
+							],
+							"path": [
+								"api",
+								"authtoken"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetReservation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"721660\",\r\n  \"lastName\" : \"Amarasena\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"AR Kiosk-1\",\r\n  \"propertyCode\": \"Arena\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation"
+					]
+				},
+				"description": "Get reservation\n\nasasas"
+			},
+			"response": []
+		},
+		{
+			"name": "GetSundry",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "authtoken",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/sundry/627354/arena",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"sundry",
+						"627354",
+						"arena"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Arriving Reservations",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/arriving/a8a68215-3332-416c-95ee-2ea7fafe4f3a?status=",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"arriving",
+						"a8a68215-3332-416c-95ee-2ea7fafe4f3a"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": ""
+						}
+					]
+				},
+				"description": "`/api/v1/reservation/arriving/{propertyId}/status=confirmed&needSync=false`\n\nReturns all reservations for today. If needSyncset to true, it will trigger latest arrivals from PMS. This might take some time. Use this flag if it is absolutely required.\n\npropertyId: propertyId\n\nstatus: confirmed/arrived/default:null\n\nneedSync: true/default:false"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Payment Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ReservationId\": \"11e35f9b-0be6-41d8-9f11-f72250a5eafd\",\r\n    \"PropertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"PmsReservationId\": \"678995\",\r\n    \"Status\": \"Success\",\r\n    \"AccommodationAmount\": 449.00,\r\n    \"CarparkAmount\": 25.00,\r\n    \"TransactionReference\": \"b713e231-d9c5-4b34-ad2d-78a32b2827fb\",\r\n    \"AccountId\": 421939,\r\n    \"Amount\": 456.11,\r\n    \"CardId\": 1112,\r\n    \"DateOfTransaction\": \"2023-12-12 00:49:25\",\r\n    \"IsAccommodationPaymentExempted\": false,\r\n    \"IsAddonPaymentExempted\": false,\r\n    \"UpdateCarparkAmount\": true,\r\n    \"AmountSurcharge\": 7.11\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/payment/status/payment",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"payment",
+						"status",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Deposit Payment Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"PmsReservationId\": \"678995\",\r\n    \"ReservationId\": \"11e35f9b-0be6-41d8-9f11-f72250a5eafd\",\r\n    \"PropertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"SurchargeAmount\": 3.00,\r\n    \"Token\": \"00000003019f4eed\",\r\n    \"DepositAmount\": 200.00,\r\n    \"Status\": \"Success\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/payment/status/deposit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"payment",
+						"status",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Reservation Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pmsReservationId\": \"627314\",\r\n    \"propertyCode\": \"Arena\",\r\n    \"status\": \"arrived\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Keypin Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reservationId\": \"11e35f9b-0be6-41d8-9f11-f72250a5eafd\",\r\n    \"propertyId\": \"a8a68215-3332-416c-95ee-2ea7fafe4f3a\",\r\n    \"status\": \"pinsent\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reservation/pinstatus",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reservation",
+						"pinstatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Property/code/arena",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Property",
+						"code",
+						"arena"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property List",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_AdminApi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"pmsReservationId\": \"608609\",\r\n  \"lastName\" : \"Henry\",\r\n  \"email\":\"\",\r\n  \"kioskName\": \"FV Kiosk-1\",\r\n  \"propertyCode\": \"Fortitude\",\r\n  \"checkType\": \"checkin\",\r\n  \"isQrCodeScanned\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Property",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Property"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

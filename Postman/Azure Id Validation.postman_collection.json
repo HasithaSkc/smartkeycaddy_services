@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "72aede26-482e-4717-8cee-9761abd6dccd",
+		"name": "Azure Id Validation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23633241"
+	},
+	"item": [
+		{
+			"name": "Send Document",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "3b6c6b51a6234a67bc83356846865049",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "ss",
+							"type": "file",
+							"src": "/C:/DEV/Scanned Images/Passport.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://idvalidation.cognitiveservices.azure.com/formrecognizer/documentModels/prebuilt-idDocument:analyze?api-version=2023-07-31",
+					"protocol": "https",
+					"host": [
+						"idvalidation",
+						"cognitiveservices",
+						"azure",
+						"com"
+					],
+					"path": [
+						"formrecognizer",
+						"documentModels",
+						"prebuilt-idDocument:analyze"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2023-07-31"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Analyse",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "3b6c6b51a6234a67bc83356846865049",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://idvalidation.cognitiveservices.azure.com/formrecognizer/documentModels/prebuilt-idDocument/analyzeResults/cbe26437-378b-4c8e-b3e5-edad4ebd49c6?api-version=2023-07-31",
+					"protocol": "https",
+					"host": [
+						"idvalidation",
+						"cognitiveservices",
+						"azure",
+						"com"
+					],
+					"path": [
+						"formrecognizer",
+						"documentModels",
+						"prebuilt-idDocument",
+						"analyzeResults",
+						"cbe26437-378b-4c8e-b3e5-edad4ebd49c6"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2023-07-31"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
