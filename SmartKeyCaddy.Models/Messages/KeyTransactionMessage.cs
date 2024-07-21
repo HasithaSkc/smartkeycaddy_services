@@ -1,10 +1,9 @@
-﻿namespace SmartKeyCaddy.Models;
+﻿namespace SmartKeyCaddy.Models.Messages;
 
-public class KeyTransactionMessage
+public class KeyTransactionMessage: BaseMessage
 {
-    public Guid? KeyAllocationId { get; set; }
-    public Guid DeviceId { get; set; }
     public string KeyName { get; set; }
+    public Guid? KeyAllocationId { get; set; }
     public Guid? KeyFobTagId { get; set; }
     public string KeyFobTag { get; set; }
     public string KeyPinCode { get; set; }

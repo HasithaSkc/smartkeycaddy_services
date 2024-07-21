@@ -17,9 +17,6 @@ public enum KeyAllocationStatus
 
 public enum DeviceMessageType
 {
-    KeyCreated,
-    KeyAllocated,
-    KeyDroppedOff,
-    KeyPickedUp,
+    KeyTransaction,
     Unknown
 }

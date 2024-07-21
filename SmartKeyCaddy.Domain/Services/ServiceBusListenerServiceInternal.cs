@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Contracts;
+using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
+using SmartKeyCaddy.Models.Messages;
 using System.Text;
 
 namespace SmartKeyCaddy.Domain.Services;
@@ -13,24 +15,31 @@ public partial class ServiceBusListenerService
 {
     private async Task ProcessMessagesAsync(Message message, CancellationToken token)
     {
+        string messageBody = string.Empty;
+        bool success = false;
+
         try
         {
-            var messageBody = Encoding.UTF8.GetString(message.Body) ?? string.Empty;
+            messageBody = Encoding.UTF8.GetString(message.Body) ?? string.Empty;
             var messageType = GetMessageType(messageBody);
 
             switch (messageType)
             {
-                case DeviceMessageType.KeyCreated:
-                case DeviceMessageType.KeyDroppedOff:
+                case DeviceMessageType.KeyTransaction:
                     await ProcessDeviceKeyTransaction(messageBody);
                     break;
             }
 
+            success = true;
             await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ProcessMessagesAsync");
+        }
+        finally 
+        {
+            await InsertIntoServiceBusMessageQueue(messageBody, success);
         }
     }
 
@@ -63,5 +72,29 @@ public partial class ServiceBusListenerService
             var scopedService = scope.ServiceProvider.GetRequiredService<IKeyAllocationService>();
             await scopedService.ProcessDeviceKeyTransaction(keyTransactionMessage);
         }
+    }
+
+    private async Task InsertIntoServiceBusMessageQueue(string messageBody, bool success)
+    {
+        if (string.IsNullOrEmpty(messageBody))
+            return;
+
+        var baseMessage = JsonConvert.DeserializeObject<BaseMessage>(messageBody);
+
+        if (baseMessage == null) return;
+
+        using (var scope = _serviceScopeFactory.CreateScope())
+        {
+            var scopedService = scope.ServiceProvider.GetRequiredService<IMessageQueueRepository>();
+            await scopedService.InsertMessage(new ServiceBusMessage()
+            {
+                DeviceId = baseMessage.DeviceId,
+                DeviceName = baseMessage.DeviceName,
+                MessageBody = messageBody,
+                IsProcessed = success,
+                EnqueuedDateTime = baseMessage.EnqueuedDateTime
+            });
+        }
+        
     }
 }

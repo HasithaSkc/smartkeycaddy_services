@@ -1,5 +1,6 @@
 ﻿
 using SmartKeyCaddy.Models;
+using SmartKeyCaddy.Models.Messages;
 
 namespace SmartKeyCaddy.Domain.Contracts;
 

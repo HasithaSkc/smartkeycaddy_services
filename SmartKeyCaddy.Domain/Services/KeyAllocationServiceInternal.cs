@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Models;
+using SmartKeyCaddy.Models.Messages;
 using System.Text.RegularExpressions;
 
 namespace SmartKeyCaddy.Domain.Services;

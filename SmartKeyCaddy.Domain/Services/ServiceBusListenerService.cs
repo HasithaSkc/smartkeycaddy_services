@@ -11,7 +11,7 @@ public partial class ServiceBusListenerService : IServiceBusListenerService
     private readonly IQueueClient _queueClient;
     private readonly ILogger<ServiceBusListenerService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-
+    
     public ServiceBusListenerService(IQueueClient queueClient,
         ILogger<ServiceBusListenerService> logger,
         IServiceScopeFactory serviceScopeFactory)

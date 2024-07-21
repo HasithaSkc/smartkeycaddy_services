@@ -35,6 +35,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 builder.Services.AddScoped<IKeyAllocationRepository, KeyAllocationRepository>();
 builder.Services.AddScoped<IPropertyRoomRepository, PropertyRoomRepository>();
+builder.Services.AddScoped<IMessageQueueRepository, MessageQueueRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

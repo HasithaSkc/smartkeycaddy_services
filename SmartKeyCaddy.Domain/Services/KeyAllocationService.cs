@@ -7,6 +7,7 @@ using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Exceptions;
+using SmartKeyCaddy.Models.Messages;
 
 namespace SmartKeyCaddy.Domain.Services;
 
