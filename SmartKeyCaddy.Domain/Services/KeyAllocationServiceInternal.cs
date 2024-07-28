@@ -133,8 +133,8 @@ public partial class KeyAllocationService
             deviceKeyAllocationRequest.KeyAllocation.Add(new DeviceKeyAllocationItem()
             {
                 KeyAllocationId = keyAllocation.KeyAllocationId,
-                CheckInDate = keyAllocation.CheckInDate?.ToString(Constants.ShortDateString) ?? string.Empty,
-                CheckOutDate = keyAllocation.CheckOutDate?.ToString(Constants.ShortDateString) ?? string.Empty,
+                CheckInDate = keyAllocation.CheckInDate?.ToString(Constants.IsoDateString) ?? string.Empty,
+                CheckOutDate = keyAllocation.CheckOutDate?.ToString(Constants.IsoDateString) ?? string.Empty,
                 GuestWelcomeMessage = keyAllocation.GuestWelcomeMessage,
                 KeyPickupInstruction = keyAllocation.KeyPickupInstruction,
                 KeyName = keyAllocation.KeyName,
@@ -144,20 +144,5 @@ public partial class KeyAllocationService
         }
 
         return deviceKeyAllocationRequest;
-    }
-
-    private KeyAllocation ConvertKeyTransactionMessageToDomainModel(KeyTransactionMessage keyTransactionMessage)
-    {
-        return new KeyAllocation
-        {
-            KeyAllocationId = keyTransactionMessage.KeyAllocationId ?? Guid.NewGuid(),
-            KeyName = keyTransactionMessage.KeyName,
-            KeyPinCode = keyTransactionMessage.KeyPinCode,
-            DeviceId = keyTransactionMessage.DeviceId,
-            KeyFobTagId = keyTransactionMessage.KeyFobTagId,
-            BinId = keyTransactionMessage.BinId,
-            Status = keyTransactionMessage.Status,
-            IsSuccessful = keyTransactionMessage.IsSuccessful
-        };
     }
 }

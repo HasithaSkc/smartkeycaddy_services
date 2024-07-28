@@ -2,12 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Messages;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -21,6 +23,7 @@ public partial class ServiceBusListenerService
         try
         {
             messageBody = Encoding.UTF8.GetString(message.Body) ?? string.Empty;
+
             var messageType = GetMessageType(messageBody);
 
             switch (messageType)
@@ -29,8 +32,8 @@ public partial class ServiceBusListenerService
                     await ProcessDeviceKeyTransaction(messageBody);
                     break;
             }
-
             success = true;
+
             await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
         }
         catch (Exception ex)

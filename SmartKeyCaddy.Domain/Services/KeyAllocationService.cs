@@ -55,6 +55,8 @@ public partial class KeyAllocationService : IKeyAllocationService
                 return ConvertToKeyAllocationResponse(keyAllocationList, device);
             }
 
+            await InsertKeyAllocationList(keyAllocationList);
+
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.KeyAllocationRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
             methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetCloudToDeviceKeyAllocationRequest(keyAllocationList, device), JsonHelper.GetJsonSerializerSettings()));
@@ -78,10 +80,9 @@ public partial class KeyAllocationService : IKeyAllocationService
                 {
                     keysNotCreated.Add(keyAllocation);
                     _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}");
-                    continue;
                 };
 
-                await InsertKeyAllocation(keyAllocation);
+                await _keyRepository.UpdateKeyAllocation(keyAllocation);
             }
 
             return ConvertToKeyAllocationResponse(keyAllocationList, device);
@@ -144,16 +145,22 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
     {
-        if (keyTransactionMessage.KeyAllocationId == null)
-            return;
+        foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
+        {
+            if (!keyTransaction.KeyAllocationId.HasValue) continue;
 
-        var keyAllocation = await _keyRepository.GetKeyAllocation(keyTransactionMessage.KeyAllocationId.Value);
-        keyAllocation.Status = keyTransactionMessage.Status;
-        keyAllocation.IsSuccessful = keyTransactionMessage.IsSuccessful;
-        keyAllocation.BinId = keyTransactionMessage.BinId;
-        keyAllocation.KeyFobTagId = keyTransactionMessage.KeyFobTagId;
-        
-        await _keyRepository.UpdateKeyAllocation(keyAllocation);
+            var keyAllocation = await _keyRepository.GetKeyAllocation(keyTransaction.KeyAllocationId.Value);
+
+            if (keyAllocation == null) continue;
+
+            keyAllocation.Status = keyTransaction.Status;
+            keyAllocation.IsSuccessful = keyTransaction.IsSuccessful;
+            keyAllocation.BinId = keyTransaction.BinId;
+            keyAllocation.KeyFobTagId = keyTransaction.KeyFobTagId;
+
+            await _keyRepository.UpdateKeyAllocation(keyAllocation);
+
+        }
     }
 }
 
