@@ -119,6 +119,7 @@ namespace SmartKeyCaddy.Repository
                 var sql = @$"update {Constants.SmartKeyCaddySchemaName}.keyallocation 
                         set status = @Status,
                         issuccessful = @IsSuccessful,
+                        binid = @BinId
                         updateddatetime = @updatedDatetime where keyallocationid = @keyAllocationId";
                 await connection.QueryAsync<KeyAllocation>(sql,
                 new
