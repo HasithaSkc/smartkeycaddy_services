@@ -8,7 +8,7 @@ namespace SmartKeyCaddy.Repository
     public class KeyAllocationRepository : IKeyAllocationRepository
     {
         private readonly IDBConnectionFactory _dbConnectionFactory;
-        public KeyAllocationRepository(IDBConnectionFactory dbConnectionFactory) 
+        public KeyAllocationRepository(IDBConnectionFactory dbConnectionFactory)
         {
             _dbConnectionFactory = dbConnectionFactory;
         }
@@ -62,7 +62,7 @@ namespace SmartKeyCaddy.Repository
                         values (@ChainId, @PropertyId, @DeviceId, @CheckInDate, @CheckOutDate, @KeyName, @KeyPinCode, @BinId, @KeyFobTagId, @GuestWelcomeMessage, @KeyPickupInstruction, @IsSuccessful, @Status, @CreatedDateTime)
                         returning keyallocationid";
 
-            
+
             keyAllocation.KeyAllocationId = await connection.QuerySingleAsync<Guid>(sql,
             new
             {
@@ -112,32 +112,23 @@ namespace SmartKeyCaddy.Repository
 
         public async Task UpdateKeyAllocation(KeyAllocation keyAllocation)
         {
-            try
-            {
-                using var connection = _dbConnectionFactory.CreateConnection();
+            using var connection = _dbConnectionFactory.CreateConnection();
 
-                var sql = @$"update {Constants.SmartKeyCaddySchemaName}.keyallocation 
-                        set status = @Status
-                            ,issuccessful = @IsSuccessful
-                            ,binid = @BinId
-                            ,updateddatetime = @updatedDatetime 
-                        where keyallocationid = @keyAllocationId";
-                await connection.QueryAsync<KeyAllocation>(sql,
-                new
-                {
-                    keyAllocation.KeyAllocationId,
-                    keyAllocation.BinId,
-                    keyAllocation.IsSuccessful,
-                    keyAllocation.Status,
-                    updatedDatetime = DateTime.UtcNow
-                });
-            }
-            catch (Exception ss)
+            var sql = @$"update {Constants.SmartKeyCaddySchemaName}.keyallocation 
+                    set status = @Status
+                        ,issuccessful = @IsSuccessful
+                        ,binid = @BinId
+                        ,lastupdateddatetime = @lastUpdatedDatetime 
+                    where keyallocationid = @keyAllocationId";
+            await connection.QueryAsync<KeyAllocation>(sql,
+            new
             {
-
-                throw;
-            }
-           
+                keyAllocation.KeyAllocationId,
+                keyAllocation.BinId,
+                keyAllocation.IsSuccessful,
+                keyAllocation.Status,
+                lastUpdatedDatetime = DateTime.UtcNow
+            });
         }
     }
 }

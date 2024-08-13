@@ -1,12 +1,11 @@
 ﻿namespace SmartKeyCaddy.Models.Messages;
 
-public class KeyTransactionMessage
+public class KeyTransactionMessage : BaseMessage
 { 
-    public string MessageType { get; set; }
     public List<KeyTransactionItem> KeyTransactions { get; set; }  
 }
 
-public class KeyTransactionItem : BaseMessage
+public class KeyTransactionItem 
 {
     public Guid KeyTransactionId { get; set; }
     public string KeyName { get; set; }

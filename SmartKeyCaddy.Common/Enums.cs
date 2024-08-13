@@ -8,9 +8,9 @@ public static class DeviceResponseStatus
 public enum KeyAllocationStatus
 {
     KeyCreated,
-    KeyAllocated,
-    KeyDroppedOff,
+    KeyLoaded,
     KeyPickedUp,
+    KeyDroppedOff,
     KeyExistsOnServer,
     KeyExistsOnDevice
 }
@@ -18,5 +18,6 @@ public enum KeyAllocationStatus
 public enum DeviceMessageType
 {
     KeyTransaction,
+    RegisterDevice,
     Unknown
 }

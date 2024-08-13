@@ -8,6 +8,7 @@ using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Exceptions;
 using SmartKeyCaddy.Models.Messages;
+using System.Transactions;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -18,18 +19,21 @@ public partial class KeyAllocationService : IKeyAllocationService
     private readonly IDeviceRepository _deviceRepository;
     private readonly IKeyAllocationRepository _keyRepository;
     private readonly IPropertyRoomRepository _propertyRoomRepository;
+    private readonly IBinRepository _binRepository;
 
     public KeyAllocationService(ILogger<KeyAllocationService> logger,
         IIotHubServiceClient iotHubServiceClient,
         IDeviceRepository deviceRepository,
         IKeyAllocationRepository keyRepository,
-        IPropertyRoomRepository propertyRoomRepository)
+        IPropertyRoomRepository propertyRoomRepository,
+        IBinRepository binRepository)
     {
         _logger = logger;
         _iotHubServiceClient = iotHubServiceClient;
         _deviceRepository = deviceRepository;
         _keyRepository = keyRepository;
         _propertyRoomRepository = propertyRoomRepository;
+        _binRepository = binRepository;
     }
 
     public async Task<KeyAllocationResponse> CreateKey(KeyAllocationRequest createKeyRequest)
@@ -40,7 +44,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             throw new NotFoundException("Device not found");
 
         createKeyRequest.DeviceName = device.DeviceName;
-        
+
         var keyAllocationResponse = new KeyAllocationResponse();
         var keysNotCreated = new List<KeyAllocation>();
 
@@ -92,15 +96,15 @@ public partial class KeyAllocationService : IKeyAllocationService
             _logger.LogError(ex, "Key allocation failed");
             throw;
         }
-        finally 
-        { 
-            await _iotHubServiceClient.CloseConnection(); 
+        finally
+        {
+            await _iotHubServiceClient.CloseConnection();
         }
     }
 
     public async Task<bool> DeleteKey(Guid deviceId, Guid keyId)
     {
-        var key  = await _keyRepository.GetKeyAllocation(deviceId, keyId);
+        var key = await _keyRepository.GetKeyAllocation(deviceId, keyId);
 
         if (key == null)
             throw new Exception("Key not found");
@@ -117,7 +121,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
             if (response == null || response.Status != DeviceResponseStatus.Success)
                 throw new Exception("Failed to delete the key");
-            
+
             await _keyRepository.Insertkey(key);
         }
         catch (Exception ex)
@@ -145,13 +149,15 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
     {
+        //using var transactionScope = new TransactionScope();
+
         foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
         {
             if (!keyTransaction.KeyAllocationId.HasValue) continue;
 
             var keyAllocation = await _keyRepository.GetKeyAllocation(keyTransaction.KeyAllocationId.Value);
 
-            if (keyAllocation == null) continue;
+            if (!(keyTransaction?.BinId.HasValue ?? false)) continue;
 
             keyAllocation.Status = keyTransaction.Status;
             keyAllocation.IsSuccessful = keyTransaction.IsSuccessful;
@@ -160,7 +166,22 @@ public partial class KeyAllocationService : IKeyAllocationService
 
             await _keyRepository.UpdateKeyAllocation(keyAllocation);
 
+            await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.Status));
         }
+
+        //transactionScope.Complete();
+    }
+
+    private bool GetBinInUse(string status)
+    { 
+        var keyAllocationStatus = Enum.Parse(typeof(KeyAllocationStatus), status);
+
+        return keyAllocationStatus switch
+        {
+            KeyAllocationStatus.KeyLoaded => true,
+            KeyAllocationStatus.KeyPickedUp => false,
+            _ => false,
+        };
     }
 }
 

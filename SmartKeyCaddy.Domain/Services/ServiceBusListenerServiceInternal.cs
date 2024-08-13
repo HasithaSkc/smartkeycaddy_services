@@ -31,6 +31,9 @@ public partial class ServiceBusListenerService
                 case DeviceMessageType.KeyTransaction:
                     await ProcessDeviceKeyTransaction(messageBody);
                     break;
+                case DeviceMessageType.RegisterDevice:
+                    await ProcessDeviceRegistration(messageBody);
+                    break;
             }
             success = true;
 
@@ -74,6 +77,20 @@ public partial class ServiceBusListenerService
         {
             var scopedService = scope.ServiceProvider.GetRequiredService<IKeyAllocationService>();
             await scopedService.ProcessDeviceKeyTransaction(keyTransactionMessage);
+        }
+    }
+
+    private async Task ProcessDeviceRegistration(string messageBody)
+    {
+        var registerDeviceMessage = JsonConvert.DeserializeObject<RegisterDeviceMessage>(messageBody);
+
+        if (registerDeviceMessage == null)
+            return;
+
+        using (var scope = _serviceScopeFactory.CreateScope())
+        {
+            var scopedService = scope.ServiceProvider.GetRequiredService<IAdminService>();
+            await scopedService.RegisterDevice(registerDeviceMessage);
         }
     }
 

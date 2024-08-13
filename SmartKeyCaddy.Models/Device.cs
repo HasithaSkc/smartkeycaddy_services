@@ -13,4 +13,5 @@ public class Device
     public bool IsMaster { get; set; }
     public Guid MasterDeviceId { get; set; }
     public Guid ChainId { get; set; }
+    public bool IsRegistered { get; set; }
 }
