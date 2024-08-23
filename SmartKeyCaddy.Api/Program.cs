@@ -30,6 +30,15 @@ builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("E
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddHostedService<ServiceBusBackgroundService>();
+builder.Services.AddSingleton<IServiceBusListenerService, ServiceBusListenerService>();
+builder.Services.AddSingleton<IServiceBusPublisherService, ServiceBusPublisherService>();
+builder.Services.AddSingleton<IQueueClient>(serviceProvider =>
+{
+    var azureServiceBusSettings = builder.Configuration.GetSection("AzureServiceBusSettings").Get<AzureServiceBusSettings>();
+    return new QueueClient(azureServiceBusSettings.ConnectionString, azureServiceBusSettings.QueueName);
+});
+
 builder.Services.AddSingleton<IDBConnectionFactory>(new SqlConnectionFactory(builder.Configuration.GetConnectionString("DatabaseConnectionString")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
@@ -39,20 +48,13 @@ builder.Services.AddScoped<IMessageQueueRepository, MessageQueueRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IBinRepository, BinRepository>();
 builder.Services.AddScoped<IKeyFobTagRepository, KeyFobTagRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IKeyAllocationService, KeyAllocationService>();
-
-// Register Service bus
-builder.Services.AddHostedService<ServiceBusBackgroundService>();
-builder.Services.AddSingleton<IServiceBusListenerService, ServiceBusListenerService>();
-builder.Services.AddSingleton<IServiceBusPublisherService, ServiceBusPublisherService>();
-builder.Services.AddSingleton<IQueueClient>(serviceProvider =>
-{
-    var azureServiceBusSettings = builder.Configuration.GetSection("AzureServiceBusSettings").Get<AzureServiceBusSettings>();
-    return new QueueClient(azureServiceBusSettings.ConnectionString, azureServiceBusSettings.QueueName);
-});
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IotHubServiceClient, IotHubServiceClient>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

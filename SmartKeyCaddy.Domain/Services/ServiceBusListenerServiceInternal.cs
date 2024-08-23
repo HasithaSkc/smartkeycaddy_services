@@ -10,6 +10,7 @@ using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Messages;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Xml;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -28,10 +29,10 @@ public partial class ServiceBusListenerService
 
             switch (messageType)
             {
-                case DeviceMessageType.KeyTransaction:
+                case MessageType.KeyTransaction:
                     await ProcessDeviceKeyTransaction(messageBody);
                     break;
-                case DeviceMessageType.RegisterDevice:
+                case MessageType.DeviceRegistration:
                     await ProcessDeviceRegistration(messageBody);
                     break;
             }
@@ -55,13 +56,15 @@ public partial class ServiceBusListenerService
         return Task.CompletedTask;
     }
 
-    private DeviceMessageType GetMessageType(string messageStr)
+    private MessageType GetMessageType(string messageStr)
     {
+        JObject jsonObject1 = JObject.Parse(messageStr);
+
         var jsonObject = JsonConvert.DeserializeObject<dynamic>(messageStr);
         var messageType = jsonObject?.messageType?.Value;
 
-        if (!Enum.TryParse(messageType, true, out DeviceMessageType deviceMessageType))
-            return DeviceMessageType.Unknown;
+        if (!Enum.TryParse(messageType, true, out MessageType deviceMessageType))
+            return MessageType.Unknown;
 
         return deviceMessageType;
     }
@@ -82,15 +85,15 @@ public partial class ServiceBusListenerService
 
     private async Task ProcessDeviceRegistration(string messageBody)
     {
-        var registerDeviceMessage = JsonConvert.DeserializeObject<RegisterDeviceMessage>(messageBody);
+        var deviceRegisterMessage = JsonConvert.DeserializeObject<DeviceRegisterMessage>(messageBody);
 
-        if (registerDeviceMessage == null)
+        if (deviceRegisterMessage == null)
             return;
 
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var scopedService = scope.ServiceProvider.GetRequiredService<IAdminService>();
-            await scopedService.RegisterDevice(registerDeviceMessage);
+            await scopedService.RegisterDevice(deviceRegisterMessage);
         }
     }
 

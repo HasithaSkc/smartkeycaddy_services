@@ -1,11 +1,11 @@
 ﻿using Microsoft.Azure.Devices;
-using SmartKeyCaddy.Models;
 
 namespace SmartKeyCaddy.Domain.Contracts;
 
 public interface IIotHubServiceClient
 {
-    Task<CloudToDeviceMethodResult> SendMessageToDeviceAsync(string deviceId, CloudToDeviceMethod cloudToDeviceMethod);
-    Task<bool> IsDeviceOnlineAsync(string deviceName);
+    Task<CloudToDeviceMethodResult> SendDirectMessageToDevice(string deviceName, CloudToDeviceMethod cloudToDeviceMethod);
+    Task SendIndirectMessageToDevice(string deviceName, string message);
+    Task<bool> IsDeviceOnline(string deviceName);
     Task CloseConnection();
 }

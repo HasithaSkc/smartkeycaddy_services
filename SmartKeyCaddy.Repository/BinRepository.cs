@@ -17,7 +17,7 @@ namespace SmartKeyCaddy.Repository
         {
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = @$"select binid, binnumber, status, inuse from {Constants.SmartKeyCaddySchemaName}.bin  where deviceid = @deviceId";
+            var sql = @$"select binid,binnumber,binaddress,status,false as inuse,createddatetime,lastupdateddatetime from {Constants.SmartKeyCaddySchemaName}.bin  where deviceid = @deviceId";
 
             return (await connection.QueryAsync<Bin>(sql,
             new

@@ -40,6 +40,20 @@ namespace SmartKeyCaddy.Repository
                 })).ToList();
         }
 
+        public async Task<List<DeviceSetting>> GetDeviceSettings(Guid deviceId, Guid propertyId)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var sql = @$"select devicesettingid, chainid, propertyid, deviceid, settingname, settingvalue, settingdescription, createddatetime, lastupdateddatetime
+	                    from {Constants.SmartKeyCaddySchemaName}.devicesetting where deviceid = @deviceId and propertyid = @propertyId";
+
+            return (await connection.QueryAsync<DeviceSetting>(sql,
+                new
+                {
+                    deviceId,
+                    propertyId
+                })).ToList();
+        }
+
         public async Task RegisterDevice(Guid deviceId, bool isRegistered)
         {
             using var connection = _dbConnectionFactory.CreateConnection();

@@ -4,6 +4,6 @@ namespace SmartKeyCaddy.Domain.Repository
 {
     public interface IKeyFobTagRepository
     {
-        Task<List<KeyFobTag>> GetKeyFobTags(Guid deviceId);
+        Task<List<KeyFobTag>> GetKeyFobTags(Guid propertyId);
     }
 }

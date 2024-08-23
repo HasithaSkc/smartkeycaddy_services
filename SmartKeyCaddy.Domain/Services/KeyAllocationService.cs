@@ -52,7 +52,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         {
             var keyAllocationList = await ConvertKeyAlloationRequestToDomainModel(createKeyRequest.KeyAllocation, device);
 
-            if (!await _iotHubServiceClient.IsDeviceOnlineAsync(device.DeviceName))
+            if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
             {
                 _logger.LogError($"Device is offline. Creating keys on the server");
                 await InsertKeyAllocationList(keyAllocationList);
@@ -64,7 +64,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.KeyAllocationRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
             methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetCloudToDeviceKeyAllocationRequest(keyAllocationList, device), JsonHelper.GetJsonSerializerSettings()));
-            var deviceToCloudResponse = await _iotHubServiceClient.SendMessageToDeviceAsync(device.DeviceName, methodInvocation);
+            var deviceToCloudResponse = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
 
             if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
                 throw new Exception("Key allocation failed");
@@ -117,7 +117,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         try
         {
             // Invoke the direct method on the device
-            var response = await _iotHubServiceClient.SendMessageToDeviceAsync(device.DeviceName, methodInvocation);
+            var response = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
 
             if (response == null || response.Status != DeviceResponseStatus.Success)
                 throw new Exception("Failed to delete the key");

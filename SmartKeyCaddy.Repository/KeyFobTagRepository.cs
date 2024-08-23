@@ -13,16 +13,18 @@ namespace SmartKeyCaddy.Repository
             _dbConnectionFactory = dbConnectionFactory;
         }
 
-        public async Task<List<KeyFobTag>> GetKeyFobTags(Guid deviceId)
+        public async Task<List<KeyFobTag>> GetKeyFobTags(Guid propertyId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = @$"select keyfobtagid, keyfobtag, isactive from {Constants.SmartKeyCaddySchemaName}.keyfobtag  where deviceid = @deviceId";
+            var sql = @$"select keyfobtag.keyfobtagid, keyfobtag.keyfobtag as keyfobtagcode, keyfobtag.isactive, keyfobtag.createddatetime, keyfobtag.lastupdateddatetime, propertyroom.roomnumber from {Constants.SmartKeyCaddySchemaName}.keyfobtag  
+                        inner join smartkeycaddyuser.propertyroom on propertyroom.propertyroomid = keyfobtag.propertyroomid
+                        where propertyroom.propertyid = @propertyId";
 
             return (await connection.QueryAsync<KeyFobTag>(sql,
             new
             {
-                deviceId
+                propertyId
             })).ToList();
         }
     }

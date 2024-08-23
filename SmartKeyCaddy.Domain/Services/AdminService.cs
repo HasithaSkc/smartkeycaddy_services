@@ -1,12 +1,9 @@
-﻿using Microsoft.Azure.Devices;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
-using SmartKeyCaddy.Models;
-using SmartKeyCaddy.Models.Exceptions;
 using SmartKeyCaddy.Models.Messages;
 
 namespace SmartKeyCaddy.Domain.Services;
@@ -17,44 +14,45 @@ public partial class AdminService : IAdminService
     private readonly IDeviceRepository _deviceRepository;
     private readonly IBinRepository _binRepository;
     private readonly IKeyFobTagRepository _keyFobTagRepository;
-    private readonly IServiceBusPublisherService _serviceBusPublisherService;
+    private readonly IotHubServiceClient _iotHubServiceClient;
 
     public AdminService(ILogger<KeyAllocationService> logger,
         IDeviceRepository deviceRepository,
         IBinRepository binRepository,
         IKeyFobTagRepository keyFobTagRepository,
-        IServiceBusPublisherService serviceBusPublisherService)
+        IotHubServiceClient iotHubServiceClient)
     {
         _logger = logger;
         _deviceRepository = deviceRepository;
         _binRepository = binRepository;
         _keyFobTagRepository = keyFobTagRepository;
-        _serviceBusPublisherService = serviceBusPublisherService;
+        _iotHubServiceClient = iotHubServiceClient;
     }
 
-    public async Task RegisterDevice(RegisterDeviceMessage registerDeviceMessage)
+    public async Task RegisterDevice(DeviceRegisterMessage registerDeviceMessage)
     {
         var device = await _deviceRepository.GetDevice(registerDeviceMessage.DeviceId);
 
-        if (device.IsRegistered) throw new Exception("Device already registered");
+        //if (device.IsRegistered) throw new Exception("Device already registered");
 
         await _deviceRepository.RegisterDevice(registerDeviceMessage.DeviceId, true);
 
-        var deviceConfiguratioNMessage = await GetDeviceConfigurationMessage(registerDeviceMessage.DeviceId);
+        var deviceConfigurationMessage = await GetDeviceConfigurationMessage(device);
+        var deviceConfigurationMessageJson = JsonConvert.SerializeObject(deviceConfigurationMessage, JsonHelper.GetJsonSerializerSettings());
 
-        await _serviceBusPublisherService.PublishMessage(deviceConfiguratioNMessage, new CancellationTokenSource().Token);
+        await _iotHubServiceClient.SendIndirectMessageToDevice(device.DeviceName, deviceConfigurationMessageJson);
     }
 
-    public async Task<DeviceConfigurationMessage> GetDeviceConfigurationMessage(Guid deviceId)
+    public async Task DisableBin(Guid deviceId, Guid binId)
     {
-        var deviceConfiguratioNMessage = new DeviceConfigurationMessage()
-        {
-            Bins = await _binRepository.GetBins(deviceId),
-            KeyFobTags = await _keyFobTagRepository.GetKeyFobTags(deviceId)
-        };
+        var device = await _deviceRepository.GetDevice(deviceId);
 
-        return deviceConfiguratioNMessage;
+        var deviceConfigurationMessageJson = JsonConvert.SerializeObject(new DisableBinMessage()
+        {
+            BinId = binId,
+            DeviceId = deviceId
+        }, JsonHelper.GetJsonSerializerSettings());
+
+        await _iotHubServiceClient.SendIndirectMessageToDevice(device.DeviceName, deviceConfigurationMessageJson);
     }
 }
-
-

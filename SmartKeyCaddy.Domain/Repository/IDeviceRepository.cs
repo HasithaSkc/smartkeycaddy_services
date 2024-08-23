@@ -7,6 +7,7 @@ namespace SmartKeyCaddy.Domain.Repository
     {
         Task<List<Device>> GetDevices(Guid locationId);
         Task<Device> GetDevice(Guid deviceId);
-        Task RegisterDevice(Guid deviceId, bool isRegistered);
+        Task<List<DeviceSetting>> GetDeviceSettings(Guid deviceId, Guid propertyId);
+        Task RegisterDevice(Guid deviceId, bool isRegistered); 
     }
 }

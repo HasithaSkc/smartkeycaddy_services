@@ -15,9 +15,10 @@ public enum KeyAllocationStatus
     KeyExistsOnDevice
 }
 
-public enum DeviceMessageType
+public enum MessageType
 {
     KeyTransaction,
-    RegisterDevice,
+    DeviceRegistration,
+    DeviceConfiguration,
     Unknown
 }
