@@ -19,4 +19,5 @@ public class KeyAllocation
     public DateTime CreatedDateTime { get; set; }
     public Guid ChainId { get; set; }
     public Guid PropertyId { get; set; }
+    public bool IsMessageSent { get; set; }
 }

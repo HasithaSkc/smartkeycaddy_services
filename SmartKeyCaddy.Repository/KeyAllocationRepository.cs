@@ -31,7 +31,8 @@ namespace SmartKeyCaddy.Repository
                                         ,keyallocation.keypickupinstruction
                                         ,keyallocation.issuccessful
                                         ,keyallocation.status
-                                        ,keyallocation.createddatetime";
+                                        ,keyallocation.createddatetime
+                                        ,keyallocation.ismessagesent";
 
         public async Task<KeyAllocation> GetKeyAllocation(Guid deviceId, Guid keyAllocationId)
         {
@@ -127,7 +128,8 @@ namespace SmartKeyCaddy.Repository
                         ,keypickupinstruction = @KeyPickupInstruction
                         ,guestwelcomemessage = @GuestWelcomeMessage
                         ,keypincode = @KeyPinCode
-                        ,lastupdateddatetime = @lastUpdatedDatetime 
+                        ,lastupdateddatetime = @lastUpdatedDatetime
+                        ,ismessagesent = @IsMessageSent
                     where keyallocationid = @keyAllocationId";
             await connection.ExecuteAsync(sql,
             new
@@ -140,6 +142,33 @@ namespace SmartKeyCaddy.Repository
                 keyAllocation.KeyPickupInstruction,
                 keyAllocation.GuestWelcomeMessage,
                 keyAllocation.KeyPinCode,
+                keyAllocation.IsMessageSent,
+                lastUpdatedDatetime = DateTime.UtcNow
+            });
+        }
+
+        public async Task<List<KeyAllocation>> GetUnsentKeyAllocations()
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var sql = $"{keyAllocationSql} from {Constants.SmartKeyCaddySchemaName}.keyallocation where ismessagesent = false";
+            return (await connection.QueryAsync<KeyAllocation>(sql)).ToList();
+        }
+
+        public async Task UpdateKeyUnsentAllocationStatus(List<Guid> keyAllocationIds, Guid deviceId)
+        {
+            _logger.LogInformation($"Updating key allocation message sent status");
+
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var sql = @$"update {Constants.SmartKeyCaddySchemaName}.keyallocation 
+                    set ismessagesent = true, lastupdateddatetime = @lastUpdatedDatetime
+                    where keyallocationid = any(@keyAllocationIds) and deviceid = @deviceId";
+            await connection.ExecuteAsync(sql,
+            new
+            {
+                keyAllocationIds,
+                deviceId,
                 lastUpdatedDatetime = DateTime.UtcNow
             });
         }

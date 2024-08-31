@@ -155,13 +155,14 @@ public partial class KeyAllocationService
         keyAllocation.IsSuccessful = true;
     }
 
-    private DeviceKeyAllocationRequest GetCloudToDeviceKeyAllocationRequest(List<KeyAllocation> keyAllocationList, Device device)
+    private DeviceKeyAllocationRequest GetCloudToDeviceKeyAllocationRequest(List<KeyAllocation> keyAllocationList, Device device, MessageType messageType)
     {
         var deviceKeyAllocationRequest = new DeviceKeyAllocationRequest()
         {
             DeviceName = device.DeviceName,
             DeviceId = device.DeviceId,
-            KeyAllocation = new List<DeviceKeyAllocationItem>()
+            KeyAllocation = new List<DeviceKeyAllocationItem>(),
+            MessageType = messageType.ToString()
         };
 
         foreach (var keyAllocation in keyAllocationList)

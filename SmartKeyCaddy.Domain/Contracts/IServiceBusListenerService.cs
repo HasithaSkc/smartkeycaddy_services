@@ -3,6 +3,6 @@ namespace SmartKeyCaddy.Domain.Contracts;
 
 public interface IServiceBusListenerService
 {
-    Task RegisterOnMessageHandlerAndReceiveMessages(CancellationToken cancellationToken);
+    Task RegisterMessageHandlerAndReceiveMessages(CancellationToken cancellationToken);
     Task CloseQueueAsync();
 }

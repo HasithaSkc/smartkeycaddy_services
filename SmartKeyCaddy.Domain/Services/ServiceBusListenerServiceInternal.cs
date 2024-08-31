@@ -6,17 +6,14 @@ using Newtonsoft.Json.Linq;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
-using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Messages;
 using System.Text;
-using System.Text.Json.Nodes;
-using System.Xml;
 
 namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusListenerService
 {
-    private async Task ProcessMessagesAsync(Message message, CancellationToken token)
+    private async Task ProcessIncomingDeviceMessages(Message message, CancellationToken token)
     {
         string messageBody = string.Empty;
         bool success = false;

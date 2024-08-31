@@ -1,11 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using SmartKeyCaddy.Models.Messages;
 
 namespace SmartKeyCaddy.Models;
 
-public class DeviceKeyAllocationRequest
+public class DeviceKeyAllocationRequest: BaseMessage
 {
-    public Guid DeviceId { get; set; }
-    public string DeviceName { get; set; } = string.Empty;
     public List<DeviceKeyAllocationItem> KeyAllocation { get; set; }
 }
 

@@ -53,13 +53,5 @@ namespace SmartKeyCaddy.Tests
             // Resolve the service you need to test
             _serviceBusPublisherService = _serviceProvider.GetService<IServiceBusPublisherService>();
         }
-
-        [TestMethod]
-        public async Task Publish_DeviceRegister_Message()
-        {
-            var message = Helper.GetDeviceRegisterMessage();
-            await _serviceBusPublisherService.PublishMessage(message, _cancellationToken);
-            
-        }
     }
 }

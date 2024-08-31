@@ -10,4 +10,6 @@ public interface IKeyAllocationRepository
     Task InsertkeyAllocation(KeyAllocation keyAllocation);
     Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName);
     Task UpdateKeyAllocation(KeyAllocation keyAllocation);
+    Task<List<KeyAllocation>> GetUnsentKeyAllocations();
+    Task UpdateKeyUnsentAllocationStatus(List<Guid> keyAllocationIds, Guid deviceId);
 }

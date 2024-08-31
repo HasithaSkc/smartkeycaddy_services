@@ -19,6 +19,8 @@ public enum MessageType
     KeyTransaction,
     DeviceRegistration,
     DeviceConfiguration,
+    DirectKeyAllocation,
+    IndirectKeyAllocation,
     Unknown
 }
 

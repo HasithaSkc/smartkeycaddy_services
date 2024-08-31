@@ -1,17 +1,17 @@
 ﻿using SmartKeyCaddy.Domain.Contracts;
 
-public class ServiceBusBackgroundService : BackgroundService
+public class ServiceBusListnerBackgroundService : BackgroundService
 {
     private readonly IServiceBusListenerService _serviceBusListener;
 
-    public ServiceBusBackgroundService(IServiceBusListenerService serviceBusListener)
+    public ServiceBusListnerBackgroundService(IServiceBusListenerService serviceBusListener)
     {
         _serviceBusListener = serviceBusListener;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusListener.RegisterOnMessageHandlerAndReceiveMessages(stoppingToken);
+        _serviceBusListener.RegisterMessageHandlerAndReceiveMessages(stoppingToken);
         return Task.CompletedTask;
     }
 

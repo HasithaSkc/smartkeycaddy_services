@@ -1,55 +1,30 @@
-﻿using Microsoft.Azure.ServiceBus;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Domain.Contracts;
-using System.Text;
 
 namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusPublisherService : IServiceBusPublisherService
 {
-    private readonly IQueueClient _queueClient;
-    private readonly ILogger<ServiceBusListenerService> _logger;
-    
-    public ServiceBusPublisherService(IQueueClient queueClient,
-        ILogger<ServiceBusListenerService> logger,
+    private readonly ILogger<ServiceBusPublisherService> _logger;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    public ServiceBusPublisherService(ILogger<ServiceBusPublisherService> logger,
         IServiceScopeFactory serviceScopeFactory)
     {
-        _queueClient = queueClient;
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task PublishMessage<T>(T message, CancellationToken cancellationToken) where T : class
+    public async Task ProcessUnsentKeyAllocationMessages(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Processing unsent key allocation message background service srated.");
+
+        // Keep the listener running until cancellation
         while (!cancellationToken.IsCancellationRequested)
         {
-            try
-            {
-                // Create a message to send to the queue
-                string messageBody = JsonConvert.SerializeObject(message, JsonHelper.GetJsonSerializerSettings());
-                var messageObj = new Message(Encoding.UTF8.GetBytes(messageBody));
-
-                // Send the message to the queue
-                await _queueClient.SendAsync(messageObj);
-
-                _logger.LogInformation($"Message sent: {messageBody}");
-                await Task.Delay(1000, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error publishing message");
-            }
-            finally
-            {
-                await _queueClient.CloseAsync();
-            }
+            await ProcessUnsentKeyAllocationMessages();
+            await Task.Delay(5000, cancellationToken); // Adjust delay as needed
         }
-    }
-
-    public async Task CloseQueueAsync()
-    {
-        await _queueClient.CloseAsync();
     }
 }

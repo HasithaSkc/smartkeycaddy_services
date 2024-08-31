@@ -63,7 +63,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.KeyAllocationRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
-            methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetCloudToDeviceKeyAllocationRequest(keyAllocationList, device), JsonHelper.GetJsonSerializerSettings()));
+            methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetCloudToDeviceKeyAllocationRequest(keyAllocationList, device, MessageType.DirectKeyAllocation), JsonHelper.GetJsonSerializerSettings()));
             var deviceToCloudResponse = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
 
             if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
@@ -79,7 +79,7 @@ public partial class KeyAllocationService : IKeyAllocationService
                 var allocatedKey = deviceKeyAllocationResponse.KeyAllocation.SingleOrDefault(keyResponse => string.Equals(keyAllocation.KeyName, keyResponse.KeyName, StringComparison.OrdinalIgnoreCase));
                 keyAllocation.IsSuccessful = allocatedKey?.IsSuccessful ?? false;
                 keyAllocation.Status = allocatedKey?.Status ?? string.Empty;
-
+                keyAllocation.IsMessageSent = true;
                 if (!(allocatedKey?.IsSuccessful ?? false))
                 {
                     keysNotCreated.Add(keyAllocation);
@@ -147,9 +147,30 @@ public partial class KeyAllocationService : IKeyAllocationService
         return await _keyAllocationRepository.GetKeyAllocations(deviceId);
     }
 
+    public async Task ProcessIndirectKeyAllocationMessages()
+    {
+        var unsentKeyAllocations = await _keyAllocationRepository.GetUnsentKeyAllocations();
+        var distinctDeviceIds = unsentKeyAllocations.Select(key=>key.DeviceId).Distinct();
+
+        foreach (var deviceId in distinctDeviceIds)
+        {
+            var device = await _deviceRepository.GetDevice(deviceId);
+            var deviceKeyAllocations = unsentKeyAllocations.Where(key => key.DeviceId == deviceId).ToList();
+            var deviceKeyAllocationIds = deviceKeyAllocations.Where(key => key.KeyAllocationId.HasValue).Select(key =>key.KeyAllocationId.Value).ToList();
+            var cloudToDeviceKeyAllocationList = GetCloudToDeviceKeyAllocationRequest(deviceKeyAllocations, device, MessageType.IndirectKeyAllocation);
+
+            var cloudToDeviceKeyAllocationMessageJson = JsonConvert.SerializeObject(cloudToDeviceKeyAllocationList, JsonHelper.GetJsonSerializerSettings());
+
+            if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName)) continue;
+
+            await _iotHubServiceClient.SendIndirectMessageToDevice(device.DeviceName, cloudToDeviceKeyAllocationMessageJson);
+            await _keyAllocationRepository.UpdateKeyUnsentAllocationStatus(deviceKeyAllocationIds, deviceId);
+        }
+    }
+
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
     {
-        //using var transactionScope = new TransactionScope();
+        using var transactionScope = new TransactionScope();
 
         foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
         {
@@ -169,7 +190,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.Status));
         }
 
-        //transactionScope.Complete();
+        transactionScope.Complete();
     }
 
     private bool GetBinInUse(string status)

@@ -30,7 +30,8 @@ builder.Services.Configure<AdminFunctionsApiSettings>(builder.Configuration.GetS
 builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("EmailApiSettings"));
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHostedService<ServiceBusBackgroundService>();
+builder.Services.AddHostedService<ServiceBusListnerBackgroundService>();
+builder.Services.AddHostedService<ServiceBusPublisherBackgroundService>();
 builder.Services.AddSingleton<IServiceBusListenerService, ServiceBusListenerService>();
 builder.Services.AddSingleton<IServiceBusPublisherService, ServiceBusPublisherService>();
 builder.Services.AddSingleton<IQueueClient>(serviceProvider =>

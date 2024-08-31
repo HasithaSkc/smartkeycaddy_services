@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SmartKeyCaddy.Domain.Contracts;
-using System.Text;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -21,7 +20,7 @@ public partial class ServiceBusListenerService : IServiceBusListenerService
         _serviceScopeFactory = serviceScopeFactory;   
     }
 
-    public async Task RegisterOnMessageHandlerAndReceiveMessages(CancellationToken cancellationToken)
+    public async Task RegisterMessageHandlerAndReceiveMessages(CancellationToken cancellationToken)
     {
         var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
         {
@@ -29,12 +28,11 @@ public partial class ServiceBusListenerService : IServiceBusListenerService
             AutoComplete = false
         };
 
-        _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-
         // Keep the listener running until cancellation
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(1000, cancellationToken); // Adjust delay as needed
+            _queueClient.RegisterMessageHandler(ProcessIncomingDeviceMessages, messageHandlerOptions);
+            await Task.Delay(5000, cancellationToken); // Adjust delay as needed
         }
     }
 
