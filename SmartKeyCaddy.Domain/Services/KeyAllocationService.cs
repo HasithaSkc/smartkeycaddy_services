@@ -17,7 +17,7 @@ public partial class KeyAllocationService : IKeyAllocationService
     private readonly ILogger<KeyAllocationService> _logger;
     private readonly IIotHubServiceClient _iotHubServiceClient;
     private readonly IDeviceRepository _deviceRepository;
-    private readonly IKeyAllocationRepository _keyRepository;
+    private readonly IKeyAllocationRepository _keyAllocationRepository;
     private readonly IPropertyRoomRepository _propertyRoomRepository;
     private readonly IBinRepository _binRepository;
 
@@ -31,35 +31,35 @@ public partial class KeyAllocationService : IKeyAllocationService
         _logger = logger;
         _iotHubServiceClient = iotHubServiceClient;
         _deviceRepository = deviceRepository;
-        _keyRepository = keyRepository;
+        _keyAllocationRepository = keyRepository;
         _propertyRoomRepository = propertyRoomRepository;
         _binRepository = binRepository;
     }
 
-    public async Task<KeyAllocationResponse> CreateKey(KeyAllocationRequest createKeyRequest)
+    public async Task<KeyAllocationResponse> CreateKeyAllocation(KeyAllocationRequest keyAllocationRequest)
     {
-        var device = await _deviceRepository.GetDevice(createKeyRequest.DeviceId);
+        var device = await _deviceRepository.GetDevice(keyAllocationRequest.DeviceId);
 
         if (device == null)
             throw new NotFoundException("Device not found");
 
-        createKeyRequest.DeviceName = device.DeviceName;
+        keyAllocationRequest.DeviceName = device.DeviceName;
 
         var keyAllocationResponse = new KeyAllocationResponse();
         var keysNotCreated = new List<KeyAllocation>();
 
         try
         {
-            var keyAllocationList = await ConvertKeyAlloationRequestToDomainModel(createKeyRequest.KeyAllocation, device);
+            var keyAllocationList = await ConvertKeyAlloationRequestToDomainModel(keyAllocationRequest.KeyAllocation, device);
 
             if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
             {
                 _logger.LogError($"Device is offline. Creating keys on the server");
-                await InsertKeyAllocationList(keyAllocationList);
+                await InsertOrUpdateKeyAllocationList(keyAllocationList);
                 return ConvertToKeyAllocationResponse(keyAllocationList, device);
             }
 
-            await InsertKeyAllocationList(keyAllocationList);
+            await ValidateKeyAllocationList(keyAllocationList);
 
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.KeyAllocationRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
@@ -86,7 +86,7 @@ public partial class KeyAllocationService : IKeyAllocationService
                     _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}");
                 };
 
-                await _keyRepository.UpdateKeyAllocation(keyAllocation);
+                await InsertOrUpdateKeyAllocation(keyAllocation);
             }
 
             return ConvertToKeyAllocationResponse(keyAllocationList, device);
@@ -104,7 +104,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task<bool> DeleteKey(Guid deviceId, Guid keyId)
     {
-        var key = await _keyRepository.GetKeyAllocation(deviceId, keyId);
+        var key = await _keyAllocationRepository.GetKeyAllocation(deviceId, keyId);
 
         if (key == null)
             throw new Exception("Key not found");
@@ -122,7 +122,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             if (response == null || response.Status != DeviceResponseStatus.Success)
                 throw new Exception("Failed to delete the key");
 
-            await _keyRepository.Insertkey(key);
+            await _keyAllocationRepository.InsertkeyAllocation(key);
         }
         catch (Exception ex)
         {
@@ -144,7 +144,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task<List<KeyAllocation>> GetKeyAllocations(Guid deviceId)
     {
-        return await _keyRepository.GetKeyAllocations(deviceId);
+        return await _keyAllocationRepository.GetKeyAllocations(deviceId);
     }
 
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
@@ -155,7 +155,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         {
             if (!keyTransaction.KeyAllocationId.HasValue) continue;
 
-            var keyAllocation = await _keyRepository.GetKeyAllocation(keyTransaction.KeyAllocationId.Value);
+            var keyAllocation = await _keyAllocationRepository.GetKeyAllocation(keyTransaction.KeyAllocationId.Value);
 
             if (!(keyTransaction?.BinId.HasValue ?? false)) continue;
 
@@ -164,7 +164,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             keyAllocation.BinId = keyTransaction.BinId;
             keyAllocation.KeyFobTagId = keyTransaction.KeyFobTagId;
 
-            await _keyRepository.UpdateKeyAllocation(keyAllocation);
+            await _keyAllocationRepository.UpdateKeyAllocation(keyAllocation);
 
             await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.Status));
         }

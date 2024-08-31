@@ -3,8 +3,10 @@ using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Options;
 using SmartKeyCaddy.Domain.Contracts;
+using SmartKeyCaddy.Models.Configurations;
 using System.Text;
 
+namespace SmartKeyCaddy.Domain.Services;
 public class IotHubServiceClient : IIotHubServiceClient
 {
     private readonly ServiceClient _serviceClient;

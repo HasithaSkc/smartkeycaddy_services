@@ -11,8 +11,7 @@ public enum KeyAllocationStatus
     KeyLoaded,
     KeyPickedUp,
     KeyDroppedOff,
-    KeyExistsOnServer,
-    KeyExistsOnDevice
+    KeyAlreadyExists
 }
 
 public enum MessageType
@@ -21,4 +20,12 @@ public enum MessageType
     DeviceRegistration,
     DeviceConfiguration,
     Unknown
+}
+
+public enum CommunicationType
+{
+    OnlineChekin,
+    OnlineChekinReminder,
+    QrCode,
+    KeyPinCode
 }

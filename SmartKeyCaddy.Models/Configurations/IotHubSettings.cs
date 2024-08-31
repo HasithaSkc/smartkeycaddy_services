@@ -1,4 +1,4 @@
-﻿namespace HotelCheckIn.Models.Configurations;
+﻿namespace SmartKeyCaddy.Models.Configurations;
 
 public class IotHubSettings
 {

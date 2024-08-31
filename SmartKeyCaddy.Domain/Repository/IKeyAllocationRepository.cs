@@ -1,15 +1,13 @@
-﻿using Microsoft.Azure.Devices;
-using SmartKeyCaddy.Models;
+﻿using SmartKeyCaddy.Models;
 
-namespace SmartKeyCaddy.Domain.Repository
+namespace SmartKeyCaddy.Domain.Repository;
+
+public interface IKeyAllocationRepository
 {
-    public interface IKeyAllocationRepository
-    {
-        Task<KeyAllocation> GetKeyAllocation(Guid deviceId, Guid keyId);
-        Task<List<KeyAllocation>> GetKeyAllocations(Guid deviceId);
-        Task<KeyAllocation> GetKeyAllocation(Guid keyAllocationId);
-        Task Insertkey(KeyAllocation keyAllocation);
-        Task<bool> KeyExists(string keyName, DateTime? checkinDate);
-        Task UpdateKeyAllocation(KeyAllocation keyAllocation);
-    }
+    Task<KeyAllocation> GetKeyAllocation(Guid deviceId, Guid keyId);
+    Task<List<KeyAllocation>> GetKeyAllocations(Guid deviceId);
+    Task<KeyAllocation> GetKeyAllocation(Guid keyAllocationId);
+    Task InsertkeyAllocation(KeyAllocation keyAllocation);
+    Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName);
+    Task UpdateKeyAllocation(KeyAllocation keyAllocation);
 }

@@ -14,6 +14,7 @@ using SmartKeyCaddy.Domain.Contracts;
 using Microsoft.Extensions.Options;
 using SmartKeyCaddy.Models.Configurations;
 using Microsoft.Azure.ServiceBus;
+using HotelCheckIn.Domain.Contracts;
 
 var logger = new LoggerFactory().CreateLogger<Program>();
 
@@ -27,7 +28,6 @@ builder.Services.AddSingleton<IIotHubServiceClient, IotHubServiceClient>();
 
 builder.Services.Configure<AdminFunctionsApiSettings>(builder.Configuration.GetSection("AdminFunctionsApiSettings"));
 builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("EmailApiSettings"));
-
 builder.Services.AddMemoryCache();
 
 builder.Services.AddHostedService<ServiceBusBackgroundService>();
@@ -49,12 +49,16 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IBinRepository, BinRepository>();
 builder.Services.AddScoped<IKeyFobTagRepository, KeyFobTagRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IKeyAllocationService, KeyAllocationService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IotHubServiceClient, IotHubServiceClient>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
+builder.Services.AddScoped<ITemplateService, TemplateService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

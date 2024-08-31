@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Logging;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
@@ -8,9 +9,12 @@ namespace SmartKeyCaddy.Repository
     public class KeyAllocationRepository : IKeyAllocationRepository
     {
         private readonly IDBConnectionFactory _dbConnectionFactory;
-        public KeyAllocationRepository(IDBConnectionFactory dbConnectionFactory)
+        private readonly ILogger<KeyAllocationRepository> _logger;
+        public KeyAllocationRepository(IDBConnectionFactory dbConnectionFactory,
+            ILogger<KeyAllocationRepository> logger)
         {
             _dbConnectionFactory = dbConnectionFactory;
+            _logger = logger;
         }
 
         private const string keyAllocationSql = @"select keyallocation.keyallocationid
@@ -54,20 +58,22 @@ namespace SmartKeyCaddy.Repository
             })).ToList();
         }
 
-        public async Task Insertkey(KeyAllocation keyAllocation)
+        public async Task InsertkeyAllocation(KeyAllocation keyAllocation)
         {
+            _logger.LogInformation($"Inserting key allocation: {keyAllocation.KeyName}");
+
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = @$"insert into {Constants.SmartKeyCaddySchemaName}.keyallocation (chainid, propertyid, deviceid, checkindate, checkoutdate, keyname, keypincode, binid, keyfobtagid, guestwelcomemessage, keypickupinstruction, issuccessful, status, createddatetime)
-                        values (@ChainId, @PropertyId, @DeviceId, @CheckInDate, @CheckOutDate, @KeyName, @KeyPinCode, @BinId, @KeyFobTagId, @GuestWelcomeMessage, @KeyPickupInstruction, @IsSuccessful, @Status, @CreatedDateTime)
+            var sql = @$"insert into {Constants.SmartKeyCaddySchemaName}.keyallocation (chainid, propertyid, keyallocationid, deviceid, checkindate, checkoutdate, keyname, keypincode, binid, keyfobtagid, guestwelcomemessage, keypickupinstruction, issuccessful, status, createddatetime)
+                        values (@ChainId, @PropertyId, @KeyAllocationId, @DeviceId, @CheckInDate, @CheckOutDate, @KeyName, @KeyPinCode, @BinId, @KeyFobTagId, @GuestWelcomeMessage, @KeyPickupInstruction, @IsSuccessful, @Status, @CreatedDateTime)
                         returning keyallocationid";
-
 
             keyAllocation.KeyAllocationId = await connection.QuerySingleAsync<Guid>(sql,
             new
             {
                 keyAllocation.ChainId,
                 keyAllocation.PropertyId,
+                keyAllocation.KeyAllocationId,
                 keyAllocation.DeviceId,
                 keyAllocation.CheckInDate,
                 keyAllocation.CheckOutDate,
@@ -83,19 +89,16 @@ namespace SmartKeyCaddy.Repository
             });
         }
 
-        public async Task<bool> KeyExists(string keyName, DateTime? checkinDate)
+        public async Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = @$"select exists (select 1 from {Constants.SmartKeyCaddySchemaName}.keyallocation 
-                        where keyname = @keyName and (@checkinDateString IS NULL OR checkindate::date = @checkinDateString::date))";
-
-            return (await connection.QueryAsync<bool>(sql,
+            var sql = $"{keyAllocationSql} from {Constants.SmartKeyCaddySchemaName}.keyallocation where keyname = @keyName";
+            return (await connection.QueryAsync<KeyAllocation>(sql,
             new
             {
-                keyName,
-                checkinDateString = checkinDate?.ToString(Constants.ShortDateString)
-            })).First();
+                keyName
+            })).SingleOrDefault();
         }
 
         public async Task<KeyAllocation> GetKeyAllocation(Guid keyAllocationId)
@@ -112,21 +115,31 @@ namespace SmartKeyCaddy.Repository
 
         public async Task UpdateKeyAllocation(KeyAllocation keyAllocation)
         {
+            _logger.LogInformation($"Updating key allocation: {keyAllocation.KeyName}");
+
             using var connection = _dbConnectionFactory.CreateConnection();
 
             var sql = @$"update {Constants.SmartKeyCaddySchemaName}.keyallocation 
-                    set status = @Status
-                        ,issuccessful = @IsSuccessful
-                        ,binid = @BinId
+                    set  issuccessful = @IsSuccessful
+                        ,status = @Status
+                        ,checkindate = @CheckInDate
+                        ,checkoutdate = @CheckOutDate
+                        ,keypickupinstruction = @KeyPickupInstruction
+                        ,guestwelcomemessage = @GuestWelcomeMessage
+                        ,keypincode = @KeyPinCode
                         ,lastupdateddatetime = @lastUpdatedDatetime 
                     where keyallocationid = @keyAllocationId";
-            await connection.QueryAsync<KeyAllocation>(sql,
+            await connection.ExecuteAsync(sql,
             new
             {
                 keyAllocation.KeyAllocationId,
-                keyAllocation.BinId,
                 keyAllocation.IsSuccessful,
                 keyAllocation.Status,
+                keyAllocation.CheckInDate,
+                keyAllocation.CheckOutDate,
+                keyAllocation.KeyPickupInstruction,
+                keyAllocation.GuestWelcomeMessage,
+                keyAllocation.KeyPinCode,
                 lastUpdatedDatetime = DateTime.UtcNow
             });
         }

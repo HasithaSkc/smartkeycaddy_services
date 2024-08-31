@@ -4,9 +4,7 @@ using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Models;
-using SmartKeyCaddy.Models.Messages;
 using System.Text.RegularExpressions;
-using System.Transactions;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -16,6 +14,7 @@ public partial class KeyAllocationService
     {
         var keyAllocationList = new List<KeyAllocation>();
         var propertyRooms = await _propertyRoomRepository.GetPropertyRooms(device.PropertyId);
+        
 
         foreach (var keyAllocationRequestItem in keyAllocationRequestItemList)
         {
@@ -40,7 +39,7 @@ public partial class KeyAllocationService
             KeyFobTagId = propertyRoom?.KeyFobTagId,
             DeviceId = device.DeviceId,
             ChainId = device.ChainId,
-            PropertyId = device.PropertyId
+            PropertyId = device.PropertyId,
         };
     }
 
@@ -90,34 +89,70 @@ public partial class KeyAllocationService
                 IsSuccessful = keyAllocationItem.IsSuccessful,
                 KeyName = keyAllocationItem.KeyName,
                 KeyPinCode = keyAllocationItem.KeyPinCode,
-                Status = keyAllocationItem.Status
+                Status = keyAllocationItem.Status,
             });
         }
 
         return keyAllocationResponse;
     }
 
-    private async Task InsertKeyAllocationList(List<KeyAllocation> keyAllocation)
+    private async Task InsertOrUpdateKeyAllocationList(List<KeyAllocation> keyAllocationList)
     {
-        foreach (var keyAllocationItem in keyAllocation)
+        foreach (var keyAllocation in keyAllocationList)
         {
-            await InsertKeyAllocation(keyAllocationItem);
+            await InsertOrUpdateKeyAllocation(keyAllocation);
         }
     }
 
-    private async Task InsertKeyAllocation(KeyAllocation keyAllocation)
+    private async Task InsertOrUpdateKeyAllocation(KeyAllocation keyAllocation)
     {
-        if (await _keyRepository.KeyExists(keyAllocation.KeyName, keyAllocation.CheckInDate))
+        var existingKeyAllocation = await _keyAllocationRepository.GetKeyAllocationByKeyName(keyAllocation.KeyName);
+
+        ValidateKeyAllocation(keyAllocation, existingKeyAllocation);
+
+        if (!keyAllocation.IsSuccessful) return;
+
+        if (existingKeyAllocation !=null)
+             await _keyAllocationRepository.UpdateKeyAllocation(keyAllocation);
+        else
+            await _keyAllocationRepository.InsertkeyAllocation(keyAllocation);
+    }
+
+    private async Task ValidateKeyAllocationList(List<KeyAllocation> keyAllocationList)
+    {
+        foreach (var keyAllocation in keyAllocationList)
         {
-            keyAllocation.Status = KeyAllocationStatus.KeyExistsOnServer.ToString();
-            keyAllocation.IsSuccessful = false;
-            _logger.LogInformation($"Key: {keyAllocation.KeyName} Checkin date: {keyAllocation.CheckInDate} already exists");
+            var existingKeyAllocation = await _keyAllocationRepository.GetKeyAllocationByKeyName(keyAllocation.KeyName);
+
+            ValidateKeyAllocation(keyAllocation, existingKeyAllocation);
+        }
+    }
+
+    private void ValidateKeyAllocation(KeyAllocation keyAllocation, KeyAllocation existingKeyAllocation)
+    {
+        if (existingKeyAllocation != null)
+        {
+            keyAllocation.KeyAllocationId = existingKeyAllocation.KeyAllocationId;
+
+            //If key already loaded then don't create
+            if (string.Equals(existingKeyAllocation?.Status, KeyAllocationStatus.KeyLoaded.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                keyAllocation.Status = KeyAllocationStatus.KeyAlreadyExists.ToString();
+                keyAllocation.IsSuccessful = false;
+                keyAllocation.KeyPinCode = string.Empty;
+                _logger.LogInformation($"Key: {keyAllocation.KeyName} with status: {keyAllocation.Status} already exists");
+            }
+            else
+            {
+                keyAllocation.IsSuccessful = true;
+                keyAllocation.Status = KeyAllocationStatus.KeyCreated.ToString();
+            }
+
             return;
         }
 
-        keyAllocation.Status = keyAllocation.Status ?? KeyAllocationStatus.KeyCreated.ToString();
+        keyAllocation.Status = KeyAllocationStatus.KeyCreated.ToString();
         keyAllocation.IsSuccessful = true;
-        await _keyRepository.Insertkey(keyAllocation);
     }
 
     private DeviceKeyAllocationRequest GetCloudToDeviceKeyAllocationRequest(List<KeyAllocation> keyAllocationList, Device device)
@@ -146,4 +181,6 @@ public partial class KeyAllocationService
 
         return deviceKeyAllocationRequest;
     }
+
+
 }

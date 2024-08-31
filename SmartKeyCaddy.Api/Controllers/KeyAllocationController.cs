@@ -20,7 +20,7 @@ namespace SmartKeyCaddy.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateKey(KeyAllocationRequest createKeyRequest)
         {
-            return Ok(await _keyReservationService.CreateKey(createKeyRequest));
+            return Ok(await _keyReservationService.CreateKeyAllocation(createKeyRequest));
         }
 
         [HttpGet]
