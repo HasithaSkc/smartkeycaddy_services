@@ -11,10 +11,9 @@ using NLog.Web;
 using SmartKeyCaddy.Api.ExceptionHandling;
 using System.Text.Json;
 using SmartKeyCaddy.Domain.Contracts;
-using Microsoft.Extensions.Options;
 using SmartKeyCaddy.Models.Configurations;
-using Microsoft.Azure.ServiceBus;
 using HotelCheckIn.Domain.Contracts;
+using Azure.Messaging.ServiceBus;
 
 var logger = new LoggerFactory().CreateLogger<Program>();
 
@@ -25,8 +24,8 @@ builder.Services.Configure<IotHubSettings>(builder.Configuration.GetSection("Iot
 
 // Add services to the container.
 builder.Services.AddSingleton<IIotHubServiceClient, IotHubServiceClient>();
-
 builder.Services.Configure<AdminFunctionsApiSettings>(builder.Configuration.GetSection("AdminFunctionsApiSettings"));
+builder.Services.Configure<AzureServiceBusSettings>(builder.Configuration.GetSection("AzureServiceBusSettings"));
 builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("EmailApiSettings"));
 builder.Services.AddMemoryCache();
 
@@ -34,10 +33,10 @@ builder.Services.AddHostedService<ServiceBusListnerBackgroundService>();
 builder.Services.AddHostedService<ServiceBusPublisherBackgroundService>();
 builder.Services.AddSingleton<IServiceBusListenerService, ServiceBusListenerService>();
 builder.Services.AddSingleton<IServiceBusPublisherService, ServiceBusPublisherService>();
-builder.Services.AddSingleton<IQueueClient>(serviceProvider =>
+builder.Services.AddSingleton<ServiceBusClient>(serviceProvider =>
 {
     var azureServiceBusSettings = builder.Configuration.GetSection("AzureServiceBusSettings").Get<AzureServiceBusSettings>();
-    return new QueueClient(azureServiceBusSettings.ConnectionString, azureServiceBusSettings.QueueName);
+    return new ServiceBusClient(azureServiceBusSettings.ConnectionString);
 });
 
 builder.Services.AddSingleton<IDBConnectionFactory>(new SqlConnectionFactory(builder.Configuration.GetConnectionString("DatabaseConnectionString")));
@@ -73,6 +72,17 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 //    x.AssumeDefaultVersionWhenUnspecified = true;
 //    x.ReportApiVersions = true;
 //});
+
+#if DEBUG
+builder.Host.UseNLog();
+#else
+    builder.Logging.AddApplicationInsights(
+            configureTelemetryConfiguration: (config) => 
+                config.ConnectionString = builder.Configuration.GetConnectionString("AppInsightsConnectionString"),
+                configureApplicationInsightsLoggerOptions: (options) => { }
+        );
+
+#endif
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

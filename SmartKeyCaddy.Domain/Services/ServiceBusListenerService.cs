@@ -1,43 +1,44 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SmartKeyCaddy.Domain.Contracts;
+using SmartKeyCaddy.Models.Configurations;
 
 namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusListenerService : IServiceBusListenerService
 {
-    private readonly IQueueClient _queueClient;
     private readonly ILogger<ServiceBusListenerService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    
-    public ServiceBusListenerService(IQueueClient queueClient,
+    private readonly ServiceBusClient _serviceBusClient;
+    private readonly AzureServiceBusSettings _azureServiceBusSettings;
+
+    public ServiceBusListenerService(ServiceBusClient serviceBusClient,
         ILogger<ServiceBusListenerService> logger,
-        IServiceScopeFactory serviceScopeFactory)
+        IServiceScopeFactory serviceScopeFactory,
+        IOptions<AzureServiceBusSettings> azureServiceBusSettings)
     {
-        _queueClient = queueClient;
         _logger = logger;
-        _serviceScopeFactory = serviceScopeFactory;   
+        _serviceScopeFactory = serviceScopeFactory;
+        _serviceBusClient = serviceBusClient;
+        _azureServiceBusSettings = azureServiceBusSettings.Value;
     }
 
     public async Task RegisterMessageHandlerAndReceiveMessages(CancellationToken cancellationToken)
     {
-        var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
+        // Create a processor for the queue
+        var processor = _serviceBusClient.CreateProcessor(_azureServiceBusSettings.QueueName, new ServiceBusProcessorOptions
         {
-            MaxConcurrentCalls = 1,
-            AutoComplete = false
-        };
+            AutoCompleteMessages = false // Set to true if you want to auto-complete messages
+        });
 
-        // Keep the listener running until cancellation
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            _queueClient.RegisterMessageHandler(ProcessIncomingDeviceMessages, messageHandlerOptions);
-            await Task.Delay(5000, cancellationToken); // Adjust delay as needed
-        }
-    }
+        // Register handlers for processing messages
+        processor.ProcessMessageAsync += ProcessIncomingDeviceMessages;
+        processor.ProcessErrorAsync += ErrorHandler;
 
-    public async Task CloseQueueAsync()
-    {
-        await _queueClient.CloseAsync();
+        // Start processing
+        await processor.StartProcessingAsync();
+        await Task.Delay(Timeout.Infinite, cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HotelCheckIn.Models.Configurations;
 using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Shared;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Models.Configurations;
@@ -11,10 +12,12 @@ public class IotHubServiceClient : IIotHubServiceClient
 {
     private readonly ServiceClient _serviceClient;
     private readonly IotHubSettings _iotHubSettings;
-
-    public IotHubServiceClient(IOptions<IotHubSettings> iotHubSettings)
+    private readonly ILogger<IotHubServiceClient> _logger;
+    public IotHubServiceClient(IOptions<IotHubSettings> iotHubSettings,
+        ILogger<IotHubServiceClient> logger)
     {
         _iotHubSettings = iotHubSettings.Value;
+        _logger = logger;
         _serviceClient = ServiceClient.CreateFromConnectionString(_iotHubSettings.ConnectionString);
     }
 
@@ -50,6 +53,8 @@ public class IotHubServiceClient : IIotHubServiceClient
     public async Task SendIndirectMessageToDevice(string deviceName, string message)
     {
         var messageBody = new Message(Encoding.ASCII.GetBytes(message));
-        await _serviceClient.SendAsync(deviceName.ToString(), messageBody);
+        messageBody.ExpiryTimeUtc = DateTime.UtcNow.AddDays(1);
+        await _serviceClient.SendAsync(deviceName, messageBody);
+        _logger.LogInformation($"Successfully sent the messge:{message}");
     }
 }

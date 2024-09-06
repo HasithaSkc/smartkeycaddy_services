@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,14 +13,15 @@ namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusListenerService
 {
-    private async Task ProcessIncomingDeviceMessages(Message message, CancellationToken token)
+    private async Task ProcessIncomingDeviceMessages(ProcessMessageEventArgs args)
     {
         string messageBody = string.Empty;
         bool success = false;
 
         try
         {
-            messageBody = Encoding.UTF8.GetString(message.Body) ?? string.Empty;
+            messageBody = Encoding.UTF8.GetString(args.Message.Body) ?? string.Empty;
+            _logger.LogInformation($"Processing incomming message: {messageBody}");
 
             var messageType = GetMessageType(messageBody);
 
@@ -35,7 +36,7 @@ public partial class ServiceBusListenerService
             }
             success = true;
 
-            await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
+            await args.CompleteMessageAsync(args.Message);
         }
         catch (Exception ex)
         {
@@ -45,12 +46,6 @@ public partial class ServiceBusListenerService
         {
             await InsertIntoServiceBusMessageQueue(messageBody, success);
         }
-    }
-
-    private Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
-    {
-        _logger.LogError($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
-        return Task.CompletedTask;
     }
 
     private MessageType GetMessageType(string messageStr)
@@ -106,7 +101,7 @@ public partial class ServiceBusListenerService
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var scopedService = scope.ServiceProvider.GetRequiredService<IMessageQueueRepository>();
-            await scopedService.InsertMessage(new ServiceBusMessage()
+            await scopedService.InsertMessage(new Models.Messages.ServiceBusMessage()
             {
                 DeviceId = baseMessage.DeviceId,
                 DeviceName = baseMessage.DeviceName,
@@ -116,5 +111,11 @@ public partial class ServiceBusListenerService
             });
         }
         
+    }
+
+    private Task ErrorHandler(ProcessErrorEventArgs args)
+    {
+        _logger.LogError($"Error: {args.Exception.Message}");
+        return Task.CompletedTask;
     }
 }
