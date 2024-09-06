@@ -10,7 +10,7 @@ using System.Text;
 namespace SmartKeyCaddy.Domain.Services;
 public class IotHubServiceClient : IIotHubServiceClient
 {
-    private readonly ServiceClient _serviceClient;
+    private ServiceClient _serviceClient;
     private readonly IotHubSettings _iotHubSettings;
     private readonly ILogger<IotHubServiceClient> _logger;
     public IotHubServiceClient(IOptions<IotHubSettings> iotHubSettings,
@@ -54,6 +54,9 @@ public class IotHubServiceClient : IIotHubServiceClient
     {
         var messageBody = new Message(Encoding.ASCII.GetBytes(message));
         messageBody.ExpiryTimeUtc = DateTime.UtcNow.AddDays(1);
+
+        _serviceClient = ServiceClient.CreateFromConnectionString(_iotHubSettings.ConnectionString);
+        
         await _serviceClient.SendAsync(deviceName, messageBody);
         _logger.LogInformation($"Successfully sent the messge:{message}");
     }
