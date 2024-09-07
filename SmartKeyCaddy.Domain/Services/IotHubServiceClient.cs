@@ -57,10 +57,8 @@ public class IotHubServiceClient : IIotHubServiceClient
             var messageBody = new Message(Encoding.ASCII.GetBytes(message));
             messageBody.ExpiryTimeUtc = DateTime.UtcNow.AddDays(1);
 
-            //_serviceClient = ServiceClient.CreateFromConnectionString(_iotHubSettings.ConnectionString);
-
             await _serviceClient.SendAsync(deviceName, messageBody);
-            _logger.LogInformation($"Successfully sent the messge:{message}");
+            _logger.LogInformation($"Successfully sent indirect device messge:{message} to device: {deviceName}");
         }
         catch (Exception ex)
         {
