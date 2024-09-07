@@ -6,10 +6,10 @@ namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusPublisherService : IServiceBusPublisherService
 {
-    private readonly ILogger<ServiceBusPublisherService> _logger;
+    private readonly ILogger<IServiceBusPublisherService> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ServiceBusPublisherService(ILogger<ServiceBusPublisherService> logger,
+    public ServiceBusPublisherService(ILogger<IServiceBusPublisherService> logger,
         IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;

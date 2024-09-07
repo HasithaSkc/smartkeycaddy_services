@@ -23,7 +23,6 @@ builder.Services.AddSingleton(typeof(ILogger), logger);
 builder.Services.Configure<IotHubSettings>(builder.Configuration.GetSection("IotHubSettings"));
 
 // Add services to the container.
-builder.Services.AddSingleton<IIotHubServiceClient, IotHubServiceClient>();
 builder.Services.Configure<AdminFunctionsApiSettings>(builder.Configuration.GetSection("AdminFunctionsApiSettings"));
 builder.Services.Configure<AzureServiceBusSettings>(builder.Configuration.GetSection("AzureServiceBusSettings"));
 builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("EmailApiSettings"));
@@ -33,7 +32,9 @@ builder.Services.AddHostedService<ServiceBusListnerBackgroundService>();
 builder.Services.AddHostedService<ServiceBusPublisherBackgroundService>();
 builder.Services.AddSingleton<IServiceBusListenerService, ServiceBusListenerService>();
 builder.Services.AddSingleton<IServiceBusPublisherService, ServiceBusPublisherService>();
-builder.Services.AddSingleton<ServiceBusClient>(serviceProvider =>
+builder.Services.AddSingleton<IIotHubServiceClient, IotHubServiceClient>();
+
+builder.Services.AddSingleton(serviceProvider =>
 {
     var azureServiceBusSettings = builder.Configuration.GetSection("AzureServiceBusSettings").Get<AzureServiceBusSettings>();
     return new ServiceBusClient(azureServiceBusSettings.ConnectionString);
@@ -56,7 +57,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IKeyAllocationService, KeyAllocationService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IotHubServiceClient, IotHubServiceClient>();
+
 builder.Services.AddScoped<IPropertyService, PropertyService>();
 builder.Services.AddScoped<ITemplateService, TemplateService>();
 

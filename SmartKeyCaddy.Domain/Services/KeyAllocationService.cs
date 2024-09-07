@@ -96,10 +96,6 @@ public partial class KeyAllocationService : IKeyAllocationService
             _logger.LogError(ex, "Key allocation failed");
             throw;
         }
-        finally
-        {
-            await _iotHubServiceClient.CloseConnection();
-        }
     }
 
     public async Task<bool> DeleteKey(Guid deviceId, Guid keyId)
@@ -128,10 +124,6 @@ public partial class KeyAllocationService : IKeyAllocationService
         {
             _logger.LogError(ex, "Error in DeleteKey");
             throw;
-        }
-        finally
-        {
-            await _iotHubServiceClient.CloseConnection();
         }
 
         return true;

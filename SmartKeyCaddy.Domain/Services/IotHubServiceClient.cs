@@ -52,12 +52,21 @@ public class IotHubServiceClient : IIotHubServiceClient
 
     public async Task SendIndirectMessageToDevice(string deviceName, string message)
     {
-        var messageBody = new Message(Encoding.ASCII.GetBytes(message));
-        messageBody.ExpiryTimeUtc = DateTime.UtcNow.AddDays(1);
+        try
+        {
+            var messageBody = new Message(Encoding.ASCII.GetBytes(message));
+            messageBody.ExpiryTimeUtc = DateTime.UtcNow.AddDays(1);
 
-        _serviceClient = ServiceClient.CreateFromConnectionString(_iotHubSettings.ConnectionString);
-        
-        await _serviceClient.SendAsync(deviceName, messageBody);
-        _logger.LogInformation($"Successfully sent the messge:{message}");
+            //_serviceClient = ServiceClient.CreateFromConnectionString(_iotHubSettings.ConnectionString);
+
+            await _serviceClient.SendAsync(deviceName, messageBody);
+            _logger.LogInformation($"Successfully sent the messge:{message}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in SendIndirectMessageToDevice");
+            throw;
+        }
+       
     }
 }

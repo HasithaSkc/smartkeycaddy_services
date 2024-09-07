@@ -14,13 +14,13 @@ public partial class AdminService : IAdminService
     private readonly IDeviceRepository _deviceRepository;
     private readonly IBinRepository _binRepository;
     private readonly IKeyFobTagRepository _keyFobTagRepository;
-    private readonly IotHubServiceClient _iotHubServiceClient;
+    private readonly IIotHubServiceClient _iotHubServiceClient;
 
     public AdminService(ILogger<KeyAllocationService> logger,
         IDeviceRepository deviceRepository,
         IBinRepository binRepository,
         IKeyFobTagRepository keyFobTagRepository,
-        IotHubServiceClient iotHubServiceClient)
+        IIotHubServiceClient iotHubServiceClient)
     {
         _logger = logger;
         _deviceRepository = deviceRepository;
