@@ -115,7 +115,7 @@ public partial class ServiceBusListenerService
 
     private Task ErrorHandler(ProcessErrorEventArgs args)
     {
-        _logger.LogError($"Error: {args.Exception.Message}");
+        _logger.LogError($"Error in servicebus receiver: {args.Exception.Message} {args.Exception.StackTrace}");
         return Task.CompletedTask;
     }
 }
