@@ -13,14 +13,14 @@ namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusListenerService
 {
-    private async Task ProcessIncomingDeviceMessages(ProcessMessageEventArgs args)
+    private async Task ProcessIncomingDeviceMessages(string messageBody)
     {
-        string messageBody = string.Empty;
+        //string messageBody = string.Empty;
         bool success = false;
 
         try
         {
-            messageBody = Encoding.UTF8.GetString(args.Message.Body) ?? string.Empty;
+            //messageBody = Encoding.UTF8.GetString(args.Message.Body) ?? string.Empty;
             _logger.LogInformation($"Processing incomming message: {messageBody}");
 
             var messageType = GetMessageType(messageBody);
@@ -36,7 +36,6 @@ public partial class ServiceBusListenerService
             }
             success = true;
 
-            await args.CompleteMessageAsync(args.Message);
         }
         catch (Exception ex)
         {

@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\HotelCheckinAdminApi - Dev-Web Deploy.pubxml" />
+    <Compile Remove="ServiceBus\**" />
+    <Content Remove="ServiceBus\**" />
+    <EmbeddedResource Remove="ServiceBus\**" />
+    <None Remove="ServiceBus\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\HotelCheckinAdminApi - Dev-Web Deploy.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.5" />
@@ -40,9 +43,6 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ServiceBus\" />
   </ItemGroup>
 </Project>
 

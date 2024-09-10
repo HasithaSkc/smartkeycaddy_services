@@ -25,20 +25,8 @@ public partial class ServiceBusListenerService : IServiceBusListenerService
         _azureServiceBusSettings = azureServiceBusSettings.Value;
     }
 
-    public async Task RegisterMessageHandlerAndReceiveMessages(CancellationToken cancellationToken)
+    public async Task RegisterMessageHandlerAndReceiveMessages(string messageBody)
     {
-        // Create a processor for the queue
-        var processor = _serviceBusClient.CreateProcessor(_azureServiceBusSettings.QueueName, new ServiceBusProcessorOptions
-        {
-            AutoCompleteMessages = false // Set to true if you want to auto-complete messages
-        });
-
-        // Register handlers for processing messages
-        processor.ProcessMessageAsync += ProcessIncomingDeviceMessages;
-        processor.ProcessErrorAsync += ErrorHandler;
-
-        // Start processing
-        await processor.StartProcessingAsync();
-        await Task.Delay(Timeout.Infinite, cancellationToken);
+        await ProcessIncomingDeviceMessages(messageBody);
     }
 }

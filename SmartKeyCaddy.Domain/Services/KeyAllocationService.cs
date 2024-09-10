@@ -162,7 +162,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
     {
-        using var transactionScope = new TransactionScope();
+        //using var transactionScope = new TransactionScope();
 
         foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
         {
@@ -182,7 +182,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.Status));
         }
 
-        transactionScope.Complete();
+        //transactionScope.Complete();
     }
 
     private bool GetBinInUse(string status)

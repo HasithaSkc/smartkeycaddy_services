@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Repository", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Tests", "SmartKeyCaddy.Tests\SmartKeyCaddy.Tests.csproj", "{89D22111-B7CC-49DC-94E5-FB506809C18B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.FunctionApp", "SmartKeyCaddy.FunctionApp\SmartKeyCaddy.FunctionApp.csproj", "{B48FBCEE-2361-49F0-BE45-85FD6609486B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{89D22111-B7CC-49DC-94E5-FB506809C18B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89D22111-B7CC-49DC-94E5-FB506809C18B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89D22111-B7CC-49DC-94E5-FB506809C18B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B48FBCEE-2361-49F0-BE45-85FD6609486B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B48FBCEE-2361-49F0-BE45-85FD6609486B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B48FBCEE-2361-49F0-BE45-85FD6609486B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B48FBCEE-2361-49F0-BE45-85FD6609486B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

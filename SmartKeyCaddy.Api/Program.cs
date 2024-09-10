@@ -28,7 +28,6 @@ builder.Services.Configure<AzureServiceBusSettings>(builder.Configuration.GetSec
 builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("EmailApiSettings"));
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHostedService<ServiceBusListnerBackgroundService>();
 builder.Services.AddHostedService<ServiceBusPublisherBackgroundService>();
 builder.Services.AddSingleton<IServiceBusListenerService, ServiceBusListenerService>();
 builder.Services.AddSingleton<IServiceBusPublisherService, ServiceBusPublisherService>();
