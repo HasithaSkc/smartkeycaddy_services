@@ -2,6 +2,7 @@
 using HotelCheckIn.Domain.Contracts;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Models;
+using SmartKeyCaddy.Domain.Repository;
 
 namespace SmartKeyCaddy.Domain.Services;
 

@@ -1,6 +1,6 @@
 ﻿using SmartKeyCaddy.Models;
 
-namespace HotelCheckIn.Domain.Contracts;
+namespace SmartKeyCaddy.Domain.Repository;
 public interface ITemplateRepository
 {
     Task<EmailTemplate> GetEmailTempalate(Guid propertyId, string empailTemplateCode);

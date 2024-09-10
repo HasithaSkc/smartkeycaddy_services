@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using HotelCheckIn.Domain.Contracts;
+using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 
 namespace SmartKeyCaddy.Repository;

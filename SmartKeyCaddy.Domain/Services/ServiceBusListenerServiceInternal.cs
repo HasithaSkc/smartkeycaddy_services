@@ -76,16 +76,25 @@ public partial class ServiceBusListenerService
 
     private async Task ProcessDeviceRegistration(string messageBody)
     {
-        var deviceRegisterMessage = JsonConvert.DeserializeObject<DeviceRegisterMessage>(messageBody);
-
-        if (deviceRegisterMessage == null)
-            return;
-
-        using (var scope = _serviceScopeFactory.CreateScope())
+        try
         {
-            var scopedService = scope.ServiceProvider.GetRequiredService<IAdminService>();
-            await scopedService.RegisterDevice(deviceRegisterMessage);
+            var deviceRegisterMessage = JsonConvert.DeserializeObject<DeviceRegisterMessage>(messageBody);
+
+            if (deviceRegisterMessage == null)
+                return;
+
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var scopedService = scope.ServiceProvider.GetRequiredService<IAdminService>();
+                await scopedService.RegisterDevice(deviceRegisterMessage);
+            }
         }
+        catch (Exception s)
+        {
+
+            throw;
+        }
+        
     }
 
     private async Task InsertIntoServiceBusMessageQueue(string messageBody, bool success)
