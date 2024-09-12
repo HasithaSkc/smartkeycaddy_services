@@ -1,5 +1,4 @@
-using System;
-using System.Threading.Tasks;
+using System.Text;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -20,9 +19,12 @@ namespace FunctionApp6
         }
 
         [Function(nameof(ServiceBusListner))]
-        public void Run([ServiceBusTrigger("azu-aue-smartkeycaddy-queue-dev", Connection = "ConnectionString")] string messageBody, ILogger log)
+        public async Task Run([ServiceBusTrigger("azu-aue-smartkeycaddy-queue-dev", Connection = "ConnectionString")] ServiceBusReceivedMessage message,
+            ServiceBusMessageActions messageActions, ILogger log)
         {
-            _serviceBusListener.RegisterMessageHandlerAndReceiveMessages(messageBody);
+            await _serviceBusListener.RegisterMessageHandlerAndReceiveMessages(Encoding.UTF8.GetString(message.Body));
+
+            await messageActions.CompleteMessageAsync(message);
         }
     }
 }

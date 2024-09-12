@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "FunctionApp6": {
+    "SmartKeyCaddy.FunctionApp": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7001",
+      "commandLineArgs": "--port 7005",
       "launchBrowser": false
     }
   }

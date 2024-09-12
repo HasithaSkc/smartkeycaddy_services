@@ -7,22 +7,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="appsettings.Development.json" />
-    <None Remove="appsettings.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="appsettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.22.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
@@ -34,9 +18,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SmartKeyCaddy.Domain\SmartKeyCaddy.Domain.csproj" />
+    <ProjectReference Include="..\SmartKeyCaddy.Models\SmartKeyCaddy.Models.csproj" />
     <ProjectReference Include="..\SmartKeyCaddy.Repository\SmartKeyCaddy.Repository.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
