@@ -51,6 +51,7 @@ builder.Services.AddScoped<IKeyFobTagRepository, KeyFobTagRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+builder.Services.AddScoped<IKeyTransactionReposiotry, KeyTransactionReposiotry>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

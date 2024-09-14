@@ -38,6 +38,8 @@ var host = new HostBuilder()
         services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<ITemplateRepository, TemplateRepository>();
         services.AddScoped<IPropertyRepository, PropertyRepository>();
+        services.AddScoped<IKeyTransactionReposiotry, KeyTransactionReposiotry>();
+
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IKeyAllocationService, KeyAllocationService>();

@@ -7,46 +7,11 @@ using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models.Messages;
-using System.Text;
 
 namespace SmartKeyCaddy.Domain.Services;
 
 public partial class ServiceBusListenerService
 {
-    private async Task ProcessIncomingDeviceMessages(string messageBody)
-    {
-        //string messageBody = string.Empty;
-        bool success = false;
-
-        try
-        {
-            //messageBody = Encoding.UTF8.GetString(args.Message.Body) ?? string.Empty;
-            _logger.LogInformation($"Processing incomming message: {messageBody}");
-
-            var messageType = GetMessageType(messageBody);
-
-            switch (messageType)
-            {
-                case MessageType.KeyTransaction:
-                    await ProcessDeviceKeyTransaction(messageBody);
-                    break;
-                case MessageType.DeviceRegistration:
-                    await ProcessDeviceRegistration(messageBody);
-                    break;
-            }
-            success = true;
-
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in ProcessMessagesAsync");
-        }
-        finally 
-        {
-            await InsertIntoServiceBusMessageQueue(messageBody, success);
-        }
-    }
-
     private MessageType GetMessageType(string messageStr)
     {
         JObject jsonObject1 = JObject.Parse(messageStr);
@@ -76,25 +41,16 @@ public partial class ServiceBusListenerService
 
     private async Task ProcessDeviceRegistration(string messageBody)
     {
-        try
+        var deviceRegisterMessage = JsonConvert.DeserializeObject<DeviceRegisterMessage>(messageBody);
+
+        if (deviceRegisterMessage == null)
+            return;
+
+        using (var scope = _serviceScopeFactory.CreateScope())
         {
-            var deviceRegisterMessage = JsonConvert.DeserializeObject<DeviceRegisterMessage>(messageBody);
-
-            if (deviceRegisterMessage == null)
-                return;
-
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var scopedService = scope.ServiceProvider.GetRequiredService<IAdminService>();
-                await scopedService.RegisterDevice(deviceRegisterMessage);
-            }
+            var scopedService = scope.ServiceProvider.GetRequiredService<IAdminService>();
+            await scopedService.RegisterDevice(deviceRegisterMessage);
         }
-        catch (Exception s)
-        {
-
-            throw;
-        }
-        
     }
 
     private async Task InsertIntoServiceBusMessageQueue(string messageBody, bool success)
@@ -118,7 +74,6 @@ public partial class ServiceBusListenerService
                 EnqueuedDateTime = baseMessage.EnqueuedDateTime
             });
         }
-        
     }
 
     private Task ErrorHandler(ProcessErrorEventArgs args)

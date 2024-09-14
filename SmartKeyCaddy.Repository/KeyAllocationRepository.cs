@@ -65,8 +65,8 @@ namespace SmartKeyCaddy.Repository
 
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = @$"insert into {Constants.SmartKeyCaddySchemaName}.keyallocation (chainid, propertyid, keyallocationid, deviceid, checkindate, checkoutdate, keyname, keypincode, binid, keyfobtagid, guestwelcomemessage, keypickupinstruction, issuccessful, status, createddatetime)
-                        values (@ChainId, @PropertyId, @KeyAllocationId, @DeviceId, @CheckInDate, @CheckOutDate, @KeyName, @KeyPinCode, @BinId, @KeyFobTagId, @GuestWelcomeMessage, @KeyPickupInstruction, @IsSuccessful, @Status, @CreatedDateTime)
+            var sql = @$"insert into {Constants.SmartKeyCaddySchemaName}.keyallocation (chainid, propertyid, keyallocationid, deviceid, checkindate, checkoutdate, keyname, keypincode, binid, keyfobtagid, guestwelcomemessage, keypickupinstruction, issuccessful, status, createddatetime, ismessagesent)
+                        values (@ChainId, @PropertyId, @KeyAllocationId, @DeviceId, @CheckInDate, @CheckOutDate, @KeyName, @KeyPinCode, @BinId, @KeyFobTagId, @GuestWelcomeMessage, @KeyPickupInstruction, @IsSuccessful, @Status, @CreatedDateTime, @IsMessageSent)
                         returning keyallocationid";
 
             keyAllocation.KeyAllocationId = await connection.QuerySingleAsync<Guid>(sql,
@@ -86,6 +86,7 @@ namespace SmartKeyCaddy.Repository
                 keyAllocation.KeyPickupInstruction,
                 keyAllocation.IsSuccessful,
                 keyAllocation.Status,
+                keyAllocation.IsMessageSent,
                 CreatedDateTime = DateTime.UtcNow
             });
         }
@@ -130,6 +131,7 @@ namespace SmartKeyCaddy.Repository
                         ,keypincode = @KeyPinCode
                         ,lastupdateddatetime = @lastUpdatedDatetime
                         ,ismessagesent = @IsMessageSent
+                        ,binid = @BinId
                     where keyallocationid = @keyAllocationId";
             await connection.ExecuteAsync(sql,
             new
@@ -143,6 +145,7 @@ namespace SmartKeyCaddy.Repository
                 keyAllocation.GuestWelcomeMessage,
                 keyAllocation.KeyPinCode,
                 keyAllocation.IsMessageSent,
+                keyAllocation.BinId,
                 lastUpdatedDatetime = DateTime.UtcNow
             });
         }

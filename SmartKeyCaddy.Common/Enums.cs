@@ -8,6 +8,7 @@ public static class DeviceResponseStatus
 public enum KeyAllocationStatus
 {
     KeyCreated,
+    KeyCreatedInServer,
     KeyLoaded,
     KeyPickedUp,
     KeyDroppedOff,

@@ -20,13 +20,15 @@ public partial class KeyAllocationService : IKeyAllocationService
     private readonly IKeyAllocationRepository _keyAllocationRepository;
     private readonly IPropertyRoomRepository _propertyRoomRepository;
     private readonly IBinRepository _binRepository;
+    private readonly IKeyTransactionReposiotry _keyTransactionReposiotry;
 
     public KeyAllocationService(ILogger<KeyAllocationService> logger,
         IIotHubServiceClient iotHubServiceClient,
         IDeviceRepository deviceRepository,
         IKeyAllocationRepository keyRepository,
         IPropertyRoomRepository propertyRoomRepository,
-        IBinRepository binRepository)
+        IBinRepository binRepository,
+        IKeyTransactionReposiotry keyTransactionReposiotry)
     {
         _logger = logger;
         _iotHubServiceClient = iotHubServiceClient;
@@ -34,6 +36,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         _keyAllocationRepository = keyRepository;
         _propertyRoomRepository = propertyRoomRepository;
         _binRepository = binRepository;
+        _keyTransactionReposiotry = keyTransactionReposiotry;
     }
 
     public async Task<KeyAllocationResponse> CreateKeyAllocation(KeyAllocationRequest keyAllocationRequest)
@@ -166,35 +169,23 @@ public partial class KeyAllocationService : IKeyAllocationService
 
         foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
         {
-            if (!keyTransaction.KeyAllocationId.HasValue) continue;
+            var keyAllocation = await _keyAllocationRepository.GetKeyAllocation(keyTransaction.KeyAllocationId);
 
-            var keyAllocation = await _keyAllocationRepository.GetKeyAllocation(keyTransaction.KeyAllocationId.Value);
+            if (keyAllocation == null) continue;
+
+            await InsertKeyTransactionForFromDevice(keyAllocation, keyTransaction);
 
             if (!(keyTransaction?.BinId.HasValue ?? false)) continue;
 
-            keyAllocation.Status = keyTransaction.Status;
-            keyAllocation.IsSuccessful = keyTransaction.IsSuccessful;
+            keyAllocation.Status = keyTransaction.KeyTransactionType;
             keyAllocation.BinId = keyTransaction.BinId;
-            keyAllocation.KeyFobTagId = keyTransaction.KeyFobTagId;
-
+           
             await _keyAllocationRepository.UpdateKeyAllocation(keyAllocation);
 
-            await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.Status));
+            await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.KeyTransactionType));
         }
 
         //transactionScope.Complete();
-    }
-
-    private bool GetBinInUse(string status)
-    { 
-        var keyAllocationStatus = Enum.Parse(typeof(KeyAllocationStatus), status);
-
-        return keyAllocationStatus switch
-        {
-            KeyAllocationStatus.KeyLoaded => true,
-            KeyAllocationStatus.KeyPickedUp => false,
-            _ => false,
-        };
     }
 }
 

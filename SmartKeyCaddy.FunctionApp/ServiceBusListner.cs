@@ -26,5 +26,7 @@ namespace FunctionApp6
 
             await messageActions.CompleteMessageAsync(message);
         }
+
+
     }
 }

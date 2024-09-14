@@ -3,7 +3,8 @@
     "SmartKeyCaddy.FunctionApp": {
       "commandName": "Project",
       "commandLineArgs": "--port 7005",
-      "launchBrowser": false
+      "launchBrowser": false,
+      "console": "integratedTerminal"
     }
   }
 }

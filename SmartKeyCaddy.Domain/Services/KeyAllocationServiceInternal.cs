@@ -183,5 +183,27 @@ public partial class KeyAllocationService
         return deviceKeyAllocationRequest;
     }
 
+    private async Task InsertKeyTransactionForFromDevice(KeyAllocation keyAllocation, KeyTransaction keyTransaction)
+    {
+        keyTransaction.BinId = keyTransaction.BinId;
+        keyTransaction.KeyTransactionType = keyTransaction.KeyTransactionType;
+        keyTransaction.KeyAllocationId = keyTransaction.KeyAllocationId;
+        keyTransaction.ChainId = keyAllocation.ChainId;
+        keyTransaction.PropertyId = keyAllocation.PropertyId;
+        keyTransaction.DeviceId = keyAllocation.DeviceId;
+        
+        await _keyTransactionReposiotry.InsertKeyTransaction(keyTransaction);
+    }
 
+    private bool GetBinInUse(string status)
+    {
+        var keyAllocationStatus = Enum.Parse(typeof(KeyAllocationStatus), status);
+
+        return keyAllocationStatus switch
+        {
+            KeyAllocationStatus.KeyLoaded => true,
+            KeyAllocationStatus.KeyPickedUp => false,
+            _ => false,
+        };
+    }
 }
