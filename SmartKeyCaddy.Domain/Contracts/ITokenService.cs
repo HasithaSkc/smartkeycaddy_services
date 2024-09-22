@@ -5,5 +5,5 @@ namespace SmartKeyCaddy.Domain.Contracts;
 
 public interface ITokenService
 {
-    ApiTokenResponse GetToken(string userId);
+    ApiTokenResponse GetToken(Guid userId);
 }

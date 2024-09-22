@@ -4,6 +4,7 @@ namespace SmartKeyCaddy.Domain.Contracts;
 
 public interface IUserService
 {
-    Task<UserInfo> GetUser(string userId, string password);
-    Task<UserInfo> GetResourceUser(string userId, string password);
+    Task<AdminUser> GetAdminUser(string userId, string password);
+    Task<ResourceUser> GetResourceUser(string userId, string password);
+    Task<UserDetails> GetMe(Guid adminUserId);
 }

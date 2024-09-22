@@ -15,5 +15,17 @@ namespace SmartKeyCaddy.Api.Controllers
         {
             _userService = userService;
         }
+
+        [HttpGet]
+        [Route("me")]
+        public async Task<IActionResult> GetMe()
+        {
+            var adminUserIdStr = SecurityExtensions.GetSubjectId(User);
+
+            if (!Guid.TryParse(adminUserIdStr, out Guid adminUserId))
+                return BadRequest("User not found");
+
+            return Ok(await _userService.GetMe(adminUserId));
+        }
     }
 }

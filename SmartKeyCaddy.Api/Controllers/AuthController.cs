@@ -34,12 +34,12 @@ namespace SmartKeyCaddy.Api.Controllers
             if (string.IsNullOrEmpty(loginRequest.UserId) || string.IsNullOrEmpty(loginRequest.Password))
                 return Unauthorized();
 
-            var user = await _userService.GetUser(loginRequest.UserId, loginRequest.Password);
+            var user = await _userService.GetAdminUser(loginRequest.UserId, loginRequest.Password);
 
             if (user == null)
                 return Unauthorized();
 
-            return Ok(_tokenService.GetToken(user.UserUuId.ToString()));
+            return Ok(_tokenService.GetToken(user.AdminUserId));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SmartKeyCaddy.Api.Controllers
             if (user == null)
                 return Unauthorized();
 
-            return Ok(_tokenService.GetToken(user.UserUuId.ToString()));
+            return Ok(_tokenService.GetToken(user.ResourceUserId));
         }
     }
 }

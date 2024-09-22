@@ -4,6 +4,7 @@ namespace SmartKeyCaddy.Domain.Repository;
 
 public interface IUserRepository
 {
-    Task<UserInfo> GetUser(string userName, string password);
-    Task<UserInfo> GetResourceUser(string userName, string password);
+    Task<AdminUser> GetUser(string userName, string password);
+    Task<ResourceUser> GetResourceUser(string userName, string password);
+    Task<List<Property>> GetAdminUserProperties(Guid userId);
 }

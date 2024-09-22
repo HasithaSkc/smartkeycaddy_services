@@ -27,7 +27,7 @@ public partial class TokenService : ITokenService
         _userRepository = userRepository;
     }
 
-    public ApiTokenResponse GetToken(string userId)
+    public ApiTokenResponse GetToken(Guid userId)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -37,7 +37,7 @@ public partial class TokenService : ITokenService
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             }),
             Expires = DateTime.UtcNow.AddDays(1),
             Issuer = _configuration["Jwt:Issuer"],
