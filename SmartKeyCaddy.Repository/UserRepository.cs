@@ -53,6 +53,7 @@ namespace SmartKeyCaddy.Repository
                             ,property.propertyname
                             ,property.propertycode
                             ,property.propertyshortcode
+                            ,property.isactive
                         from {Constants.SmartKeyCaddySchemaName}.adminuserproperty
                         inner join {Constants.SmartKeyCaddySchemaName}.adminuser on adminuser.adminuserid = adminuserproperty.adminuserid
                         inner join {Constants.SmartKeyCaddySchemaName}.property on property.propertyid = adminuserproperty.propertyid

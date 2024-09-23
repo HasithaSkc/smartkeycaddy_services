@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SixLabors.Fonts;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
@@ -16,13 +17,8 @@ public partial class KeyFobTagService : IKeyFobTagService
         _keyFobTagRepository = keyFobTagRepository;
     }
 
-    public Task<List<KeyFobTag>> GetKeyFobTags(Guid propertyId)
+    public async Task<List<KeyFobTag>> GetKeyFobTags(Guid propertyId)
     {
-        return _keyFobTagRepository.GetKeyFobTags(propertyId);
-    }
-
-    public Task<List<KeyFobTag>> GetPropertyRoomKeyFobTags(Guid propertyId)
-    {
-        return _keyFobTagRepository.GetPropertyRoomKeyFobTags(propertyId);
+        return await _keyFobTagRepository.GetKeyFobTags(propertyId);
     }
 }

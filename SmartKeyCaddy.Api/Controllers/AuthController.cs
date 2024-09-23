@@ -31,10 +31,10 @@ namespace SmartKeyCaddy.Api.Controllers
         [Route("token")]
         public async Task<IActionResult> GetToken([FromBody] LoginRequest loginRequest)
         {
-            if (string.IsNullOrEmpty(loginRequest.UserId) || string.IsNullOrEmpty(loginRequest.Password))
+            if (string.IsNullOrEmpty(loginRequest.UserName) || string.IsNullOrEmpty(loginRequest.Password))
                 return Unauthorized();
 
-            var user = await _userService.GetAdminUser(loginRequest.UserId, loginRequest.Password);
+            var user = await _userService.GetAdminUser(loginRequest.UserName, loginRequest.Password);
 
             if (user == null)
                 return Unauthorized();
@@ -52,10 +52,10 @@ namespace SmartKeyCaddy.Api.Controllers
         [Route("resourceToken")]
         public async Task<IActionResult> GetResourceToken([FromBody] LoginRequest loginRequest)
         {
-            if (string.IsNullOrEmpty(loginRequest.UserId) || string.IsNullOrEmpty(loginRequest.Password))
+            if (string.IsNullOrEmpty(loginRequest.UserName) || string.IsNullOrEmpty(loginRequest.Password))
                 return Unauthorized();
 
-            var user = await _userService.GetResourceUser(loginRequest.UserId, loginRequest.Password);
+            var user = await _userService.GetResourceUser(loginRequest.UserName, loginRequest.Password);
 
             if (user == null)
                 return Unauthorized();

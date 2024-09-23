@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 
@@ -12,7 +13,7 @@ public class PropertyRepository : IPropertyRepository
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    private string propertySql = @"select property.propertyid
+    private string propertySql = $@"select property.propertyid
                             ,propertyuuid
                             ,pmspropertyid
                             ,propertyname
@@ -52,9 +53,9 @@ public class PropertyRepository : IPropertyRepository
                             ,chain.logourl
                             ,coalesce(propertysetting.cronumber, chain.cronumber) cronumber   
                             ,chain.chaincode
-                            from property inner join chain on chain.chainid = property.chainid";
+                            from {Constants.SmartKeyCaddySchemaName}.property inner join chain on chain.chainid = property.chainid";
 
-    private string _propertySettingSql = @"select
+    private string _propertySettingSql = $@"select
                             propertyid
                             ,max(case when settingname = 'datasyncperiod' then settingvalue end) as datasyncperiod
                             ,max(case WHEN settingname = 'isonlinecheckinemailenabled' then settingvalue end) as isonlinecheckinemailenabled
@@ -79,7 +80,7 @@ public class PropertyRepository : IPropertyRepository
                             ,max(case WHEN settingname = 'updateroomnamefromguestdescription' then settingvalue end) as updateroomnamefromguestdescription
                             ,max(case WHEN settingname = 'cronumber' then settingvalue end) as cronumber
                             ,max(case WHEN settingname = 'keyprovider' then settingvalue end) as keyprovider
-                        from propertysetting
+                        from {Constants.SmartKeyCaddySchemaName}.propertysetting
                         group by propertyid";
 
     public async Task<Property> GetPropertyByPmsPropertyId(string pmsPropertyId)

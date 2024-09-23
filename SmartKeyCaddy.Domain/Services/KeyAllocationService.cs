@@ -21,14 +21,16 @@ public partial class KeyAllocationService : IKeyAllocationService
     private readonly IPropertyRoomRepository _propertyRoomRepository;
     private readonly IBinRepository _binRepository;
     private readonly IKeyTransactionReposiotry _keyTransactionReposiotry;
+    private readonly IKeyFobTagRepository _keyFobTagRepository;
 
-    public KeyAllocationService(ILogger<KeyAllocationService> logger,
+   public KeyAllocationService(ILogger<KeyAllocationService> logger,
         IIotHubServiceClient iotHubServiceClient,
         IDeviceRepository deviceRepository,
         IKeyAllocationRepository keyRepository,
         IPropertyRoomRepository propertyRoomRepository,
         IBinRepository binRepository,
-        IKeyTransactionReposiotry keyTransactionReposiotry)
+        IKeyTransactionReposiotry keyTransactionReposiotry,
+        IKeyFobTagRepository keyFobTagRepository)
     {
         _logger = logger;
         _iotHubServiceClient = iotHubServiceClient;
@@ -37,6 +39,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         _propertyRoomRepository = propertyRoomRepository;
         _binRepository = binRepository;
         _keyTransactionReposiotry = keyTransactionReposiotry;
+        _keyFobTagRepository = keyFobTagRepository;
     }
 
     public async Task<KeyAllocationResponse> CreateKeyAllocation(KeyAllocationRequest keyAllocationRequest)
@@ -53,7 +56,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
         try
         {
-            var keyAllocationList = await ConvertKeyAlloationRequestToDomainModel(keyAllocationRequest.KeyAllocation, device);
+            var keyAllocationList = await EnrichKeyAllocationRequest(keyAllocationRequest.KeyAllocation, device);
 
             if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
             {

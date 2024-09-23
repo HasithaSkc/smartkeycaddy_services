@@ -23,12 +23,5 @@ namespace SmartKeyCaddy.Api.Controllers
         {
             return Ok(await _keyFobTagService.GetKeyFobTags(propertyId));
         }
-
-        [HttpGet]
-        [Route("propertykeyfobtags/{propertyId}")]
-        public async Task<IActionResult> GetKeyPropertyRoomFobTags(Guid propertyId)
-        {
-            return Ok(await _keyFobTagService.GetPropertyRoomKeyFobTags(propertyId));
-        }
     }
 }

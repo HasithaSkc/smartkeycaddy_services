@@ -10,12 +10,11 @@ namespace SmartKeyCaddy.Domain.Services;
 
 public partial class KeyAllocationService
 {
-    private async Task<List<KeyAllocation>> ConvertKeyAlloationRequestToDomainModel(List<KeyAllocationItem> keyAllocationRequestItemList, Device device)
+    private async Task<List<KeyAllocation>> EnrichKeyAllocationRequest(List<KeyAllocationItem> keyAllocationRequestItemList, Device device)
     {
         var keyAllocationList = new List<KeyAllocation>();
-        var propertyRooms = await _propertyRoomRepository.GetPropertyRooms(device.PropertyId);
+        var propertyRooms = await _propertyRoomRepository.GetPropertyRoomKeyFobTags(device.PropertyId);
         
-
         foreach (var keyAllocationRequestItem in keyAllocationRequestItemList)
         {
             var propertyRoom = propertyRooms.SingleOrDefault(room => string.Equals(room.RoomNumber, keyAllocationRequestItem.RoomNumber, StringComparison.OrdinalIgnoreCase));
@@ -36,7 +35,7 @@ public partial class KeyAllocationService
             KeyPickupInstruction = allocatedKey.KeyPickupInstruction,
             CheckInDate = string.IsNullOrEmpty(allocatedKey.CheckInDate) ? null : Convert.ToDateTime(allocatedKey.CheckInDate),
             CheckOutDate = string.IsNullOrEmpty(allocatedKey.CheckOutDate) ? null : Convert.ToDateTime(allocatedKey.CheckOutDate),
-            KeyFobTagId = propertyRoom?.KeyFobTagId,
+            KeyFobTagId = propertyRoom?.KeyFobTag.KeyFobTagId,
             DeviceId = device.DeviceId,
             ChainId = device.ChainId,
             PropertyId = device.PropertyId,
