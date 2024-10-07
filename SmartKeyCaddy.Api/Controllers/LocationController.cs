@@ -24,7 +24,7 @@ public class LocationController : BaseController
     }
 
     [HttpGet]
-    [Route("{locationId:Guid}")]
+    [Route("{locationId:guid}")]
     public async Task<IActionResult> GetLocation(Guid locationId)
     {
         return Ok(await _locationService.GetLocation(locationId));
@@ -39,7 +39,7 @@ public class LocationController : BaseController
     }
 
     [HttpPost]
-    [Route("{parentId:Guid}")]
+    [Route("{parentId:guid}")]
     public async Task AddSubLocation([FromRoute] Guid parentId, [FromBody] Location location)
     {
         var userDetails = await GetUser();
@@ -55,7 +55,7 @@ public class LocationController : BaseController
     }
 
     [HttpDelete]
-    [Route("{locationId:Guid}")]
+    [Route("{locationId:guid}")]
     public async Task DeleteLocation(Guid locationId)
     {
         await _locationService.DeleteLocation(locationId);

@@ -21,7 +21,7 @@ public class PropertyController : ControllerBase
     }
 
     [HttpGet]
-    [Route("room/{Guid: propertyId}")]
+    [Route("room/{propertyId::guid}")]
     public async Task<IActionResult> GetPropertyRooms(Guid propertyId)
     {
         return Ok(await _propertyRoomService.GetPropertyRooms(propertyId));
@@ -35,7 +35,7 @@ public class PropertyController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{Guid: propertyId}")]
+    [Route("{propertyId:guid}")]
     public async Task<IActionResult> GetProperty(Guid propertyId)
     {
         return Ok(await _propertyService.GetProperty(propertyId));
@@ -49,14 +49,14 @@ public class PropertyController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{Guid: propertyId}")]
+    [Route("{propertyId:guid}")]
     public async Task<IActionResult> UpdateProperty(Property property)
     {
         return Ok(await _propertyService.UpdateProperty(property));
     }
 
     [HttpDelete]
-    [Route("{Guid: propertyId}")]
+    [Route("{propertyId:guid}")]
     public async Task<IActionResult> DeleteProperty(Guid propertyId)
     {
         return Ok(await _propertyService.DeleteProperty(propertyId));

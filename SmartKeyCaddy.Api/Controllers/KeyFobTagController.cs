@@ -18,7 +18,7 @@ public class KeyFobTagController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{propertyId}")]
+    [Route("{propertyId:guid}")]
     public async Task<IActionResult> GetKeyFobTags(Guid propertyId)
     {
         return Ok(await _keyFobTagService.GetKeyFobTags(propertyId));

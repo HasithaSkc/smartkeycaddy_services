@@ -18,17 +18,10 @@ public class DeviceController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{Guid:deviceId}")]
+    [Route("{deviceId:guid}")]
     public async Task<IActionResult> GetDevice(Guid deviceId)
     {
         return Ok(await _deviceService.GetDevice(deviceId));
-    }
-
-    [HttpGet]
-    [Route("{Guid:propertyId}")]
-    public async Task<IActionResult> GetDevices(Guid propertyId)
-    {
-        return Ok(await _deviceService.GetDevicesForProperty(propertyId));
     }
 
     [HttpPost]
@@ -46,7 +39,7 @@ public class DeviceController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("{Guid:deviceId}")]
+    [Route("{deviceId:guid}")]
     public async Task<IActionResult> DeleteDevice(Guid deviceId)
     {
         return Ok(await _deviceService.DeleteDevice(deviceId));
