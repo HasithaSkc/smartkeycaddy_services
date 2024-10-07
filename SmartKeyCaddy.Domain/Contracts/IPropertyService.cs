@@ -4,6 +4,9 @@ namespace SmartKeyCaddy.Domain.Contracts;
 public interface IPropertyService
 {
     Task<Property> GetPropertyByCode(string propertyCode);
-    Task<List<Property>> GetPropertyList();
-    Task<Property> GetPropertyById(Guid propertyUuid);
+    Task<List<Property>> GetProperties();
+    Task<Property> GetProperty(Guid propertyId);
+    Task<Guid> AddProperty(Property property);
+    Task<Guid> UpdateProperty(Property property);
+    Task<Guid> DeleteProperty(Guid propertyId);
 }

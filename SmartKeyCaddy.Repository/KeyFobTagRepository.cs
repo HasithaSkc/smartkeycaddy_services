@@ -17,7 +17,18 @@ namespace SmartKeyCaddy.Repository
         {
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = @$"select keyfobtagid, chainid, propertyid, keyfobtag as keyfobtagcode, isactive, createddatetime, lastupdateddatetime from {Constants.SmartKeyCaddySchemaName}.keyfobtag
+            var sql = @$"select keyfobtag.keyfobtagid
+                            ,keyfobtag.chainid
+                            ,keyfobtag.propertyid
+                            ,keyfobtag.keyfobrfid
+                            ,keyfobtag.keyfobtag as keyfobtagcode
+                            ,keyfobtag.isactive
+                            ,keyfobtag.createddatetime
+                            ,keyfobtag.lastupdateddatetime
+                            ,propertyroom.roomnumber
+                        from smartkeycaddyuser.keyfobtag
+                        inner join smartkeycaddyuser.propertyroomkeyfobtag on propertyroomkeyfobtag.keyfobtagid = keyfobtag.keyfobtagid
+                        inner join smartkeycaddyuser.propertyroom on propertyroom.propertyroomid = propertyroomkeyfobtag.propertyroomid
                         where keyfobtag.propertyid = @propertyId";
 
             return (await connection.QueryAsync<KeyFobTag>(sql,

@@ -35,11 +35,11 @@ public partial class PropertyRoomService : IPropertyRoomService
 
         var proeprtyRoomIds = propertyRoomKeyFobTags.Select(room=>room.PropertyRoomId).ToList();
         await _propertyRoomRepository.DeletePropertyRoomKeyFobTags(propertyId);
-        var property = await _propertyRepository.GetPropertyById(propertyId);
+        var property = await _propertyRepository.GetProperty(propertyId);
 
         foreach (var propertyRoomKeyFobTag in propertyRoomKeyFobTags)
         {
-            await _propertyRoomRepository.InsertPropertyRoomKeyFobTag(propertyRoomKeyFobTag, Guid.Parse("27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0"), Guid.Parse("e5c55589-e9f0-4074-9083-917b3a968179"));
+            await _propertyRoomRepository.InsertPropertyRoomKeyFobTag(propertyRoomKeyFobTag, property.PropertyId, property.Chain.ChainId);
         }
     }
 }

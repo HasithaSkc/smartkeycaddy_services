@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Repository", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Tests", "SmartKeyCaddy.Tests\SmartKeyCaddy.Tests.csproj", "{89D22111-B7CC-49DC-94E5-FB506809C18B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartKeyCaddy.FunctionApp", "SmartKeyCaddy.FunctionApp\SmartKeyCaddy.FunctionApp.csproj", "{97D97B70-0318-4D15-BDEB-F8E456609DED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.FunctionApp", "SmartKeyCaddy.FunctionApp\SmartKeyCaddy.FunctionApp.csproj", "{97D97B70-0318-4D15-BDEB-F8E456609DED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

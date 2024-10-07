@@ -28,6 +28,7 @@ namespace SmartKeyCaddy.Repository
                         values (@KeyAllocationId, @ChainId, @PropertyId, @DeviceId, @KeyTransactionType, @CreatedDateTime, @BinId)";
 
             await connection.ExecuteAsync(sql,
+
             new
             {
                 keyTransaction.ChainId,

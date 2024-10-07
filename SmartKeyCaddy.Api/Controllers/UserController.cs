@@ -2,30 +2,37 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartKeyCaddy.Domain.Contracts;
+using SmartKeyCaddy.Models;
 
-namespace SmartKeyCaddy.Api.Controllers
+namespace SmartKeyCaddy.Api.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/v1/[controller]")]
+public class UserController : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/v1/[controller]")]
-    public class UserController : ControllerBase
+    private readonly IUserService _userService;
+    public UserController(IUserService userService)
     {
-        private readonly IUserService _userService;
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-        }
+        _userService = userService;
+    }
 
-        [HttpGet]
-        [Route("me")]
-        public async Task<IActionResult> GetMe()
-        {
-            var adminUserIdStr = SecurityExtensions.GetSubjectId(User);
+    [HttpGet]
+    [Route("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var adminUserIdStr = SecurityExtensions.GetSubjectId(User);
 
-            if (!Guid.TryParse(adminUserIdStr, out Guid adminUserId))
-                return BadRequest("User not found");
+        if (!Guid.TryParse(adminUserIdStr, out Guid adminUserId))
+            return BadRequest("User not found");
 
-            return Ok(await _userService.GetMe(adminUserId));
-        }
+        return Ok(await _userService.GetMe(adminUserId));
+    }
+
+    [HttpPut]
+    [Route("")]
+    public async Task UpdateUser([FromBody] UserDetails userDetails)
+    {
+        await _userService.UpdateUser(userDetails);
     }
 }

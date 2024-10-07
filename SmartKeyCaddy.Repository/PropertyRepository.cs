@@ -14,15 +14,13 @@ public class PropertyRepository : IPropertyRepository
     }
 
     private string propertySql = $@"select property.propertyid
-                            ,propertyuuid
-                            ,pmspropertyid
-                            ,propertyname
-                            ,propertycode
-                            ,propertyshortcode
-                            ,address
-                            ,abn
+                            ,property.pmspropertyid
+                            ,property.propertyname
+                            ,property.propertycode
+                            ,property.propertyshortcode
+                            ,property.abn
                             ,property.isactive
-                            ,timezone
+                            ,property.timezone
                             ,propertysetting.datasyncperiod
                             ,propertysetting.isonlinecheckinemailenabled
                             ,propertysetting.isqrcodeenabled
@@ -48,15 +46,13 @@ public class PropertyRepository : IPropertyRepository
                             ,propertysetting.keyprovider
                             ,chain.chainid as chainchainid
                             ,chain.chainid
-                            ,chain.chainuuid
                             ,chain.chainname
                             ,chain.logourl
-                            ,coalesce(propertysetting.cronumber, chain.cronumber) cronumber   
                             ,chain.chaincode
-                            from {Constants.SmartKeyCaddySchemaName}.property inner join chain on chain.chainid = property.chainid";
+                            from {Constants.SmartKeyCaddySchemaName}.property inner join {Constants.SmartKeyCaddySchemaName}.chain on chain.chainid = property.chainid";
 
     private string _propertySettingSql = $@"select
-                            propertyid
+                            propertysetting.propertyid
                             ,max(case when settingname = 'datasyncperiod' then settingvalue end) as datasyncperiod
                             ,max(case WHEN settingname = 'isonlinecheckinemailenabled' then settingvalue end) as isonlinecheckinemailenabled
                             ,max(case WHEN settingname = 'isqrcodeenabled' then settingvalue end) as isqrcodeenabled
@@ -80,15 +76,20 @@ public class PropertyRepository : IPropertyRepository
                             ,max(case WHEN settingname = 'updateroomnamefromguestdescription' then settingvalue end) as updateroomnamefromguestdescription
                             ,max(case WHEN settingname = 'cronumber' then settingvalue end) as cronumber
                             ,max(case WHEN settingname = 'keyprovider' then settingvalue end) as keyprovider
-                        from {Constants.SmartKeyCaddySchemaName}.propertysetting
-                        group by propertyid";
+                        from {Constants.SmartKeyCaddySchemaName}.setting
+                        inner join 
+                            {Constants.SmartKeyCaddySchemaName}.propertysetting on propertysetting.settingid = setting.settingid
+	                    inner join {Constants.SmartKeyCaddySchemaName}.property on property.propertyid = propertysetting.propertyid
+                        group by
+                            propertysetting.propertyid";
 
-    public async Task<Property> GetPropertyByPmsPropertyId(string pmsPropertyId)
+
+    public async Task<Property> GetProperty(Guid propertyId)
     {
         using (var connection = _dbConnectionFactory.CreateConnection())
         {
-            var sql = @$"{propertySql} inner join ({_propertySettingSql}) propertysetting on propertysetting.propertyid = property.propertyid
-                                where pmspropertyid = @pmsPropertyId";
+            var sql = @$"{propertySql} left join ({_propertySettingSql}) propertysetting on propertysetting.propertyid = property.propertyid
+                                where property.propertyid = @propertyId";
 
             return (await connection.QueryAsync<Property, Chain, Property>(sql, (property, chain) => {
                 property.Chain = chain;
@@ -96,7 +97,7 @@ public class PropertyRepository : IPropertyRepository
             },
                 new
                 {
-                    pmsPropertyId
+                    propertyId
                 },
             splitOn: "chainchainid")).FirstOrDefault();
         }
@@ -132,25 +133,6 @@ public class PropertyRepository : IPropertyRepository
                 return property;
             },
             splitOn: "ChainChainId")).ToList();
-        }
-    }
-
-    public async Task<Property> GetPropertyById(Guid propertyId)
-    {
-        using (var connection = _dbConnectionFactory.CreateConnection())
-        {
-            var sql = @$"{propertySql} inner join ({_propertySettingSql}) propertysetting on propertysetting.propertyid = property.propertyid
-                            where propertyuuid = @propertyId";
-
-            return (await connection.QueryAsync<Property, Chain, Property>(sql, (property, chain) => {
-                property.Chain = chain;
-                return property;
-            },
-                new
-                {
-                    propertyId
-                },
-            splitOn: "ChainChainId")).FirstOrDefault();
         }
     }
 }

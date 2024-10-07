@@ -21,13 +21,28 @@ public partial class PropertyService : IPropertyService
         return await _propertyRepository.GetPropertyByCode(propertyCode);
     }
 
-    public async Task<Property> GetPropertyById(Guid propertyUuid)
+    public async Task<Property> GetProperty(Guid propertyUuid)
     {
-        return await _propertyRepository.GetPropertyById(propertyUuid);
+        return await _propertyRepository.GetProperty(propertyUuid);
     }
 
-    public async Task<List<Property>> GetPropertyList()
+    public async Task<List<Property>> GetProperties()
     {
         return await _propertyRepository.GetPropertyList();
+    }
+
+    public Task<Guid> AddProperty(Property property)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Guid> UpdateProperty(Property property)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Guid> DeleteProperty(Guid propertyId)
+    {
+        throw new NotImplementedException();
     }
 }

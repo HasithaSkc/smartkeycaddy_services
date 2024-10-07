@@ -39,6 +39,8 @@ var host = new HostBuilder()
         services.AddScoped<ITemplateRepository, TemplateRepository>();
         services.AddScoped<IPropertyRepository, PropertyRepository>();
         services.AddScoped<IKeyTransactionReposiotry, KeyTransactionReposiotry>();
+        services.AddScoped<IPropertyRoomRepository, PropertyRoomRepository>();
+        services.AddScoped<IKeyFobTagRepository, KeyFobTagRepository>();
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITokenService, TokenService>();
@@ -46,6 +48,8 @@ var host = new HostBuilder()
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IPropertyService, PropertyService>();
         services.AddScoped<ITemplateService, TemplateService>();
+        services.AddScoped<IPropertyRoomService, PropertyRoomService>();
+        services.AddScoped<IKeyFobTagService, KeyFobTagService>();
 
         services.Configure<AzureServiceBusSettings>(hostContext.Configuration.GetSection("AzureServiceBusSettings"));
         services.Configure<IotHubSettings>(hostContext.Configuration.GetSection("IotHubSettings"));

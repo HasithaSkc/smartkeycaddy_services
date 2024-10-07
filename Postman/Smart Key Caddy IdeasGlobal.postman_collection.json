@@ -1,0 +1,246 @@
+{
+	"info": {
+		"_postman_id": "fe5bbe69-422b-4503-9f49-bd88e3b4d182",
+		"name": "Smart Key Caddy IdeasGlobal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20805263",
+		"_collection_link": "https://lively-spaceship-244718.postman.co/workspace/Rapi~73df2de0-1e32-4ce6-9183-de249bfd5685/collection/20805263-fe5bbe69-422b-4503-9f49-bd88e3b4d182?action=share&source=collection_link&creator=20805263"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData=pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"authorization_smartkeycaddy\",responseData.token);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"hasitha@skc\",\r\n  \"password\": \"hasitha@skc\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Auth/token",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Auth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User - Me",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_smartkeycaddy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/User/Me",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"User",
+						"Me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property Rooms",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_smartkeycaddy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/PropertyRoom/27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"PropertyRoom",
+						"27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Property Room KeyFobTags",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_smartkeycaddy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/PropertyRoom/KeyFobTags/27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"PropertyRoom",
+						"KeyFobTags",
+						"27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get KeyfobTags",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_smartkeycaddy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/KeyfobTag/27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"KeyfobTag",
+						"27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Property Room KeyFobTags",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization_smartkeycaddy}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"propertyRoomId\": \"0cea8b89-b425-4626-a187-15b71f70c650\",\r\n        \"keyFobTagId\": \"7f9061ec-d24a-4895-8882-7f4a68de5426\"\r\n    },\r\n    {\r\n        \"propertyRoomId\": \"0d512171-46e5-4e5f-ba2c-f9a0e11a6856\",\r\n        \"keyFobTagId\": \"05f640fd-d546-4129-bbfb-8908c9d6dab4\"\r\n    },\r\n    {\r\n        \"propertyRoomId\": \"2f2ffaa0-9ee1-4cb1-a65d-4da5c91a2b75\",\r\n        \"keyFobTagId\": \"05f640fd-d546-4129-bbfb-8908c9d6dab4\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/PropertyRoom/KeyFobTags/27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"PropertyRoom",
+						"KeyFobTags",
+						"27fa3d9e-9638-4d0d-95ab-58ca3c6e0ca0"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

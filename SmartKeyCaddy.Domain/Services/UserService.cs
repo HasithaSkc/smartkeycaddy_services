@@ -39,4 +39,9 @@ public class UserService : IUserService
 
         return userDetails;
     }
+
+    public Task UpdateUser(UserDetails userDetails)
+    {
+        throw new NotImplementedException();
+    }
 }

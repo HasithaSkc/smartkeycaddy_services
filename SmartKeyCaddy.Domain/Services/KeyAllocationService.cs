@@ -21,7 +21,6 @@ public partial class KeyAllocationService : IKeyAllocationService
     private readonly IPropertyRoomRepository _propertyRoomRepository;
     private readonly IBinRepository _binRepository;
     private readonly IKeyTransactionReposiotry _keyTransactionReposiotry;
-    private readonly IKeyFobTagRepository _keyFobTagRepository;
 
    public KeyAllocationService(ILogger<KeyAllocationService> logger,
         IIotHubServiceClient iotHubServiceClient,
@@ -39,7 +38,6 @@ public partial class KeyAllocationService : IKeyAllocationService
         _propertyRoomRepository = propertyRoomRepository;
         _binRepository = binRepository;
         _keyTransactionReposiotry = keyTransactionReposiotry;
-        _keyFobTagRepository = keyFobTagRepository;
     }
 
     public async Task<KeyAllocationResponse> CreateKeyAllocation(KeyAllocationRequest keyAllocationRequest)
@@ -168,7 +166,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
     {
-        //using var transactionScope = new TransactionScope();
+        using var transactionScope = new TransactionScope();
 
         foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
         {
@@ -188,7 +186,19 @@ public partial class KeyAllocationService : IKeyAllocationService
             await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.KeyTransactionType));
         }
 
-        //transactionScope.Complete();
+        transactionScope.Complete();
+    }
+
+    public async Task<KeyAllocation> GetKeyAllocation(Guid keyAllocationidId)
+    {
+        var keyAllocation = await _keyAllocationRepository.GetKeyAllocation(keyAllocationidId);
+
+        return keyAllocation;
+    }
+
+    public Task<KeyAllocation> GetKeyAllocationHistory(string keyName)
+    {
+        throw new NotImplementedException();
     }
 }
 

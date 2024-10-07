@@ -31,7 +31,7 @@ public partial class AdminService : IAdminService
 
     public async Task RegisterDevice(DeviceRegisterMessage registerDeviceMessage)
     {
-        var device = await _deviceRepository.GetDevice(registerDeviceMessage.DeviceId);
+        var device = await _deviceRepository.GetDevice(registerDeviceMessage.DeviceId, registerDeviceMessage.DeviceName);
         _logger.LogInformation($"Regitering device: {device.DeviceName}");
 
         //if (device.IsRegistered) throw new Exception("Device already registered");

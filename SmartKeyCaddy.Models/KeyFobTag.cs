@@ -10,6 +10,8 @@ public class KeyFobTag
 
     [JsonProperty("KeyFobTag")]
     public string KeyFobTagCode { get; set; }
+    public string KeyFobRfId { get; set; }
+    public string RoomNumber { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public DateTime? LastUpdatedDateTime { get; set; }

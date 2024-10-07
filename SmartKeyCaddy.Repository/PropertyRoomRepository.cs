@@ -52,7 +52,7 @@ public class PropertyRoomRepository : IPropertyRoomRepository
                             ,propertyroom.roomnumber
                             ,keyfobtag.keyfobtagid as keyfobtagkeyfobtagid
                             ,keyfobtag.keyfobtagid
-                            ,keyfobtag.keyfobtag as keyfobtagcode
+                            ,keyfobtag.keyfobrfid
                             ,keyfobtag.isactive
                             ,propertyroomkeyfobtag.createddatetime
                             ,propertyroomkeyfobtag.lastupdateddatetime

@@ -3,25 +3,24 @@ using Microsoft.AspNetCore.Mvc;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Models;
 
-namespace SmartKeyCaddy.Api.Controllers
+namespace SmartKeyCaddy.Api.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/v1/[controller]")]
+public class KeyFobTagController : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/v1/[controller]")]
-    public class KeyFobTagController : ControllerBase
+    private readonly IKeyFobTagService _keyFobTagService;
+
+    public KeyFobTagController(IKeyFobTagService keyFobTagService)
     {
-        private readonly IKeyFobTagService _keyFobTagService;
+        _keyFobTagService = keyFobTagService;
+    }
 
-        public KeyFobTagController(IKeyFobTagService keyFobTagService)
-        {
-            _keyFobTagService = keyFobTagService;
-        }
-
-        [HttpGet]
-        [Route("{propertyId}")]
-        public async Task<IActionResult> GetKeyFobTags(Guid propertyId)
-        {
-            return Ok(await _keyFobTagService.GetKeyFobTags(propertyId));
-        }
+    [HttpGet]
+    [Route("{propertyId}")]
+    public async Task<IActionResult> GetKeyFobTags(Guid propertyId)
+    {
+        return Ok(await _keyFobTagService.GetKeyFobTags(propertyId));
     }
 }
