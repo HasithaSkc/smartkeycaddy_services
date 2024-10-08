@@ -23,18 +23,11 @@ namespace SmartKeyCaddy.Api.Controllers
             return Ok(await _keyReservationService.CreateKeyAllocation(createKeyRequest));
         }
 
-        //[HttpGet]
-        //[Route("{Guid: deviceId}")]
-        //public async Task<IActionResult> GetKeyAllocations([FromRoute]Guid deviceId)
-        //{
-        //    return Ok(await _keyReservationService.GetKeyAllocations(deviceId));
-        //}
-
-        //[HttpGet]
-        //[Route("{Guid: keyAllocationId}")]
-        //public async Task<IActionResult> GetKeyAllocation([FromRoute] Guid keyAllocationId)
-        //{
-        //    return Ok(await _keyReservationService.GetKeyAllocation(keyAllocationId));
-        //}
+        [HttpGet]
+        [Route("{deviceId:guid}")]
+        public async Task<IActionResult> GetKeyAllocations([FromRoute] Guid deviceId)
+        {
+            return Ok(await _keyReservationService.GetKeyAllocations(deviceId));
+        }
     }
 }

@@ -54,7 +54,7 @@ builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<IKeyTransactionReposiotry, KeyTransactionReposiotry>();
 builder.Services.AddScoped<IPropertyRoomRepository, PropertyRoomRepository>();
 builder.Services.AddScoped<IKeyFobTagRepository, KeyFobTagRepository>();
-
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -64,6 +64,7 @@ builder.Services.AddScoped<IPropertyService, PropertyService>();
 builder.Services.AddScoped<ITemplateService, TemplateService>();
 builder.Services.AddScoped<IPropertyRoomService, PropertyRoomService>();
 builder.Services.AddScoped<IKeyFobTagService, KeyFobTagService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
