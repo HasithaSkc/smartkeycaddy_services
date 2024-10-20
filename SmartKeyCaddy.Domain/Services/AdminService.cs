@@ -15,18 +15,21 @@ public partial class AdminService : IAdminService
     private readonly IBinRepository _binRepository;
     private readonly IKeyFobTagRepository _keyFobTagRepository;
     private readonly IIotHubServiceClient _iotHubServiceClient;
+    private readonly IPropertyRepository _propertyRepository;
 
     public AdminService(ILogger<KeyAllocationService> logger,
         IDeviceRepository deviceRepository,
         IBinRepository binRepository,
         IKeyFobTagRepository keyFobTagRepository,
-        IIotHubServiceClient iotHubServiceClient)
+        IIotHubServiceClient iotHubServiceClient,
+        IPropertyRepository propertyRepository)
     {
         _logger = logger;
         _deviceRepository = deviceRepository;
         _binRepository = binRepository;
         _keyFobTagRepository = keyFobTagRepository;
         _iotHubServiceClient = iotHubServiceClient;
+        _propertyRepository = propertyRepository;
     }
 
     public async Task RegisterDevice(DeviceRegisterMessage registerDeviceMessage)

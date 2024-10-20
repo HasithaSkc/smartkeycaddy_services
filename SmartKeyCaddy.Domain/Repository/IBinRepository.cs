@@ -6,6 +6,6 @@ namespace SmartKeyCaddy.Domain.Repository
     {
         Task UpdateBinInUse(Guid binId, bool inUse);
 
-        Task<List<Bin>> GetBins(Guid deviceId);
+        Task<List<Bin>> GetBins(Guid deviceId, bool includeChildBins = true);
     }
 }

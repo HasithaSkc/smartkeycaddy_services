@@ -1,4 +1,5 @@
 ﻿using SmartKeyCaddy.Common;
+using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Messages;
 
@@ -11,6 +12,7 @@ public partial class AdminService
         var bins = await _binRepository.GetBins(device.DeviceId);
         var keyFobTags = await _keyFobTagRepository.GetKeyFobTags(device.PropertyId);
         var deviceSettings = await _deviceRepository.GetDeviceSettings(device.DeviceId, device.PropertyId);
+        var property = await _propertyRepository.GetProperty(device.PropertyId);
 
         var deviceConfiguratioNMessage = new DeviceConfigurationMessage()
         {
@@ -19,7 +21,8 @@ public partial class AdminService
             DeviceName = device.DeviceName,
             Bins = bins,
             KeyFobTags = keyFobTags,
-            DeviceSettings = deviceSettings
+            DeviceSettings = deviceSettings,
+            Property = property
         };
 
         return deviceConfiguratioNMessage;
