@@ -83,7 +83,7 @@ public partial class KeyAllocationService : IKeyAllocationService
                 var allocatedKey = deviceKeyAllocationResponse.KeyAllocation.SingleOrDefault(keyResponse => string.Equals(keyAllocation.KeyName, keyResponse.KeyName, StringComparison.OrdinalIgnoreCase));
                 keyAllocation.IsSuccessful = allocatedKey?.IsSuccessful ?? false;
                 keyAllocation.Status = allocatedKey?.Status ?? string.Empty;
-                keyAllocation.IsMessageSent = true;
+                keyAllocation.IsMessageSent = keyAllocation.IsSuccessful;
                 if (!(allocatedKey?.IsSuccessful ?? false))
                 {
                     keysNotCreated.Add(keyAllocation);

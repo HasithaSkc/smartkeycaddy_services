@@ -35,10 +35,10 @@ public partial class KeyAllocationService
             KeyPickupInstruction = allocatedKey.KeyPickupInstruction,
             CheckInDate = string.IsNullOrEmpty(allocatedKey.CheckInDate) ? null : Convert.ToDateTime(allocatedKey.CheckInDate),
             CheckOutDate = string.IsNullOrEmpty(allocatedKey.CheckOutDate) ? null : Convert.ToDateTime(allocatedKey.CheckOutDate),
-            KeyFobTagId = propertyRoom?.KeyFobTag.KeyFobTagId,
+            KeyFobTagId = propertyRoom?.KeyFobTag?.KeyFobTagId,
             DeviceId = device.DeviceId,
             ChainId = device.ChainId,
-            PropertyId = device.PropertyId,
+            PropertyId = device.PropertyId
         };
     }
 
@@ -129,6 +129,13 @@ public partial class KeyAllocationService
 
     private void ValidateKeyAllocation(KeyAllocation keyAllocation, KeyAllocation existingKeyAllocation)
     {
+        if (keyAllocation.KeyFobTagId == null)
+        {
+            keyAllocation.Status = KeyAllocationErrorStatus.KeyFobNotFound.ToString();
+            keyAllocation.IsSuccessful = false;
+            return;
+        }
+
         if (existingKeyAllocation != null)
         {
             keyAllocation.KeyAllocationId = existingKeyAllocation.KeyAllocationId;
@@ -136,7 +143,7 @@ public partial class KeyAllocationService
             //If key already loaded then don't create
             if (string.Equals(existingKeyAllocation?.Status, KeyAllocationStatus.KeyLoaded.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                keyAllocation.Status = KeyAllocationStatus.KeyAlreadyExists.ToString();
+                keyAllocation.Status = KeyAllocationErrorStatus.KeyAlreadyExists.ToString();
                 keyAllocation.IsSuccessful = false;
                 keyAllocation.KeyPinCode = string.Empty;
                 _logger.LogInformation($"Key: {keyAllocation.KeyName} with status: {keyAllocation.Status} already exists");
@@ -164,7 +171,7 @@ public partial class KeyAllocationService
             MessageType = messageType.ToString()
         };
 
-        foreach (var keyAllocation in keyAllocationList)
+        foreach (var keyAllocation in keyAllocationList.Where(keyAloc=>keyAloc.IsSuccessful))
         {
             deviceKeyAllocationRequest.KeyAllocation.Add(new DeviceKeyAllocationItem()
             {

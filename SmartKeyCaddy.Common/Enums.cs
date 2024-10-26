@@ -12,7 +12,12 @@ public enum KeyAllocationStatus
     KeyLoaded,
     KeyPickedUp,
     KeyDroppedOff,
-    KeyAlreadyExists
+}
+
+public enum KeyAllocationErrorStatus
+{
+    KeyAlreadyExists,
+    KeyFobNotFound
 }
 
 public enum MessageType
