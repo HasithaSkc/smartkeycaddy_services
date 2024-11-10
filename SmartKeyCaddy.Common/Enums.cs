@@ -27,6 +27,7 @@ public enum MessageType
     DeviceConfiguration,
     DirectKeyAllocation,
     IndirectKeyAllocation,
+    ForceBinOpen,
     Unknown
 }
 
@@ -36,4 +37,9 @@ public enum CommunicationType
     OnlineChekinReminder,
     QrCode,
     KeyPinCode
+}
+
+public enum KeyTransactionType
+{
+    ForceBinOpen
 }

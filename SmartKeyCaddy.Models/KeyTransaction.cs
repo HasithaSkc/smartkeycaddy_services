@@ -5,7 +5,7 @@ namespace SmartKeyCaddy.Models;
 public class KeyTransaction
 {
     public Guid KeyTransactionId { get; set; }
-    public Guid KeyAllocationId { get; set; }
+    public Guid? KeyAllocationId { get; set; }
     public Guid ChainId { get; set; }
     public Guid PropertyId { get; set; }
     public Guid DeviceId { get; set; }

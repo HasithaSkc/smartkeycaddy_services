@@ -189,14 +189,14 @@ public partial class KeyAllocationService
         return deviceKeyAllocationRequest;
     }
 
-    private async Task InsertKeyTransactionForFromDevice(KeyAllocation keyAllocation, KeyTransaction keyTransaction)
+    private async Task InsertKeyTransactionForFromDevice(Guid? keyAllocationId, Device device, KeyTransaction keyTransaction)
     {
         keyTransaction.BinId = keyTransaction.BinId;
         keyTransaction.KeyTransactionType = keyTransaction.KeyTransactionType;
-        keyTransaction.KeyAllocationId = keyTransaction.KeyAllocationId;
-        keyTransaction.ChainId = keyAllocation.ChainId;
-        keyTransaction.PropertyId = keyAllocation.PropertyId;
-        keyTransaction.DeviceId = keyAllocation.DeviceId;
+        keyTransaction.KeyAllocationId = keyAllocationId;
+        keyTransaction.ChainId = device.ChainId;
+        keyTransaction.PropertyId = device.PropertyId;
+        keyTransaction.DeviceId = device.DeviceId;
         
         await _keyTransactionReposiotry.InsertKeyTransaction(keyTransaction);
     }
@@ -211,5 +211,23 @@ public partial class KeyAllocationService
             KeyAllocationStatus.KeyPickedUp => false,
             _ => false,
         };
+    }
+
+    private ForceBinOpenRequest GetForceBinOpenRequest(Device device, Guid binId)
+    {
+        return new ForceBinOpenRequest()
+        {
+            DeviceName = device.DeviceName,
+            DeviceId = device.DeviceId,
+            MessageType = MessageType.ForceBinOpen.ToString(),
+            BinId = binId
+        };
+    }
+
+    private BinOpenResponse GetBinOpenResponse(string responseJson)
+    {
+        var formattedJson = JsonHelper.FormatDeviceResponse(responseJson);
+
+        return JsonConvert.DeserializeObject<BinOpenResponse>(formattedJson, JsonHelper.GetJsonSerializerSettings());
     }
 }

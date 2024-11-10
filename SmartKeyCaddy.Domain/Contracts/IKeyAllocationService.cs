@@ -13,4 +13,5 @@ public interface IKeyAllocationService
     Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage);
     Task<bool> DeleteKey(Guid keyId);
     Task ProcessIndirectKeyAllocationMessages();
+    Task ForceBinOpen(Guid deviceId, Guid binId);
 }

@@ -14,8 +14,6 @@ public partial class ServiceBusListenerService
 {
     private MessageType GetMessageType(string messageStr)
     {
-        JObject jsonObject1 = JObject.Parse(messageStr);
-
         var jsonObject = JsonConvert.DeserializeObject<dynamic>(messageStr);
         var messageType = jsonObject?.messageType?.Value;
 

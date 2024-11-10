@@ -71,7 +71,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
-
+builder.Services.AddControllers(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true; // Disables automatic validation errors
+});
 //builder.Services.AddApiVersioning(x =>
 //{
 //    x.DefaultApiVersion = new ApiVersion(1, 0);

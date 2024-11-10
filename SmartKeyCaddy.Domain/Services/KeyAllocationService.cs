@@ -166,27 +166,32 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task ProcessDeviceKeyTransaction(KeyTransactionMessage keyTransactionMessage)
     {
-        using var transactionScope = new TransactionScope();
+        //using var transactionScope = new TransactionScope();
+
+        var device = await _deviceRepository.GetDevice(keyTransactionMessage.DeviceId);
 
         foreach (var keyTransaction in keyTransactionMessage.KeyTransactions)
         {
-            var keyAllocation = await _keyAllocationRepository.GetKeyAllocation(keyTransaction.KeyAllocationId);
+            KeyAllocation keyAllocation = null;
 
-            if (keyAllocation == null) continue;
+            if (keyTransaction.KeyAllocationId.HasValue)
+                keyAllocation = await _keyAllocationRepository.GetKeyAllocation(keyTransaction.KeyAllocationId.Value);
 
-            await InsertKeyTransactionForFromDevice(keyAllocation, keyTransaction);
+            await InsertKeyTransactionForFromDevice(keyAllocation?.KeyAllocationId, device, keyTransaction);
 
             if (!(keyTransaction?.BinId.HasValue ?? false)) continue;
+
+            await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.KeyTransactionType));
+
+            if (keyAllocation == null) continue;
 
             keyAllocation.Status = keyTransaction.KeyTransactionType;
             keyAllocation.BinId = keyTransaction.BinId;
            
             await _keyAllocationRepository.UpdateKeyAllocation(keyAllocation);
-
-            await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.KeyTransactionType));
         }
 
-        transactionScope.Complete();
+        //transactionScope.Complete();
     }
 
     public async Task<KeyAllocation> GetKeyAllocation(Guid keyAllocationidId)
@@ -200,6 +205,36 @@ public partial class KeyAllocationService : IKeyAllocationService
     {
         throw new NotImplementedException();
     }
+
+    public async Task ForceBinOpen(Guid deviceId, Guid binId)
+    {
+        var device = await _deviceRepository.GetDevice(deviceId);
+
+        if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
+            throw new BadRequestException("Device is offline");
+
+        var methodInvocation = new CloudToDeviceMethod(Constants.ForceBinOpenRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
+        methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetForceBinOpenRequest(device, binId), JsonHelper.GetJsonSerializerSettings()));
+        var deviceToCloudResponse = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
+
+        if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
+            throw new Exception($"Force bin open failed: {deviceToCloudResponse}");
+
+        var binOPenResponse = GetBinOpenResponse(deviceToCloudResponse.GetPayloadAsJson());
+
+        //If the bin has current key allocation, transactiosn will come as key allocation transaction messages
+        if (binOPenResponse.HasKeyAllocation) return;
+
+        await _keyTransactionReposiotry.InsertKeyTransaction(new KeyTransaction()
+        {
+            BinId = binId,
+            ChainId = device.ChainId,
+            CreatedDateTime = DateTime.UtcNow,
+            DeviceId = device.DeviceId,
+            IsMessageSent = false,
+            KeyAllocationId = null,
+            KeyTransactionType = KeyTransactionType.ForceBinOpen.ToString(),
+            PropertyId = device.PropertyId
+        });
+    }
 }
-
-
