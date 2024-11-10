@@ -44,4 +44,11 @@ public class DeviceController : ControllerBase
     {
         return Ok(await _deviceService.DeleteDevice(deviceId));
     }
+
+    [HttpDelete]
+    [Route("bins/{deviceId:guid}")]
+    public async Task<IActionResult> GetDeviceBinDetails(Guid deviceId)
+    {
+        return Ok(await _deviceService.DeleteDevice(deviceId));
+    }
 }

@@ -10,4 +10,5 @@ public interface IDeviceService
     Task<Guid> AddDevice(Device device);
     Task<Guid> UpdateDevice(Device device);
     Task<Property> DeleteDevice(Guid deviceId);
+    Task<Device> GetDeviceBinDetails(Guid deviceId);
 }

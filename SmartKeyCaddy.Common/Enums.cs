@@ -41,5 +41,5 @@ public enum CommunicationType
 
 public enum KeyTransactionType
 {
-    ForceBinOpen
+    ForceBinOpened
 }

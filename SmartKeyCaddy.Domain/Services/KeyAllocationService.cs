@@ -220,10 +220,10 @@ public partial class KeyAllocationService : IKeyAllocationService
         if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
             throw new Exception($"Force bin open failed: {deviceToCloudResponse}");
 
-        var binOPenResponse = GetBinOpenResponse(deviceToCloudResponse.GetPayloadAsJson());
+        var binOpenResponse = GetBinOpenResponse(deviceToCloudResponse.GetPayloadAsJson());
 
         //If the bin has current key allocation, transactiosn will come as key allocation transaction messages
-        if (binOPenResponse.HasKeyAllocation) return;
+        if (binOpenResponse.HasKeyAllocation) return;
 
         await _keyTransactionReposiotry.InsertKeyTransaction(new KeyTransaction()
         {
@@ -233,7 +233,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             DeviceId = device.DeviceId,
             IsMessageSent = false,
             KeyAllocationId = null,
-            KeyTransactionType = KeyTransactionType.ForceBinOpen.ToString(),
+            KeyTransactionType = KeyTransactionType.ForceBinOpened.ToString(),
             PropertyId = device.PropertyId
         });
     }
