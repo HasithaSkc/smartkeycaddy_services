@@ -233,7 +233,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             DeviceId = device.DeviceId,
             IsMessageSent = false,
             KeyAllocationId = null,
-            KeyTransactionType = KeyTransactionType.ForceBinOpened.ToString(),
+            KeyTransactionType = KeyAllocationStatus.BinForceOpened.ToString(),
             PropertyId = device.PropertyId
         });
     }

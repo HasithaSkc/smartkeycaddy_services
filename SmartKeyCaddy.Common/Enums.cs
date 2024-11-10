@@ -12,6 +12,7 @@ public enum KeyAllocationStatus
     KeyLoaded,
     KeyPickedUp,
     KeyDroppedOff,
+    BinForceOpened
 }
 
 public enum KeyAllocationErrorStatus
@@ -37,9 +38,4 @@ public enum CommunicationType
     OnlineChekinReminder,
     QrCode,
     KeyPinCode
-}
-
-public enum KeyTransactionType
-{
-    ForceBinOpened
 }
