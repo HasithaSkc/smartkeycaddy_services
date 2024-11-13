@@ -7,4 +7,6 @@ public interface IAdminService
 {
     Task RegisterDevice(DeviceRegisterMessage registerDeviceMessage);
     Task DisableBin(Guid deviceId, Guid binId);
+
+    string GenerateOtp();
 }

@@ -19,6 +19,14 @@ var logger = new LoggerFactory().CreateLogger<Program>();
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configFile = Environment.GetEnvironmentVariable("AppSettingsFile") ?? "appsettings.json";
+
+
+// Clear existing sources and load the custom configuration file
+builder.Configuration.Sources.Clear();
+builder.Configuration.AddJsonFile(configFile, optional: false, reloadOnChange: true)
+                     .AddEnvironmentVariables();
+
 builder.Services.AddSingleton(typeof(ILogger), logger);
 builder.Services.Configure<IotHubSettings>(builder.Configuration.GetSection("IotHubSettings"));
 

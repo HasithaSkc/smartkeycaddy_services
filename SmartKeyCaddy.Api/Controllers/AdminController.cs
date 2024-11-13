@@ -22,4 +22,11 @@ public class AdminController : ControllerBase
     {
         await _adminService.DisableBin(deviceId, binId);
     }
+
+    [HttpGet]
+    [Route("Otp")]
+    public IActionResult GenerateOtp()
+    {
+        return Ok(_adminService.GenerateOtp());
+    }
 }

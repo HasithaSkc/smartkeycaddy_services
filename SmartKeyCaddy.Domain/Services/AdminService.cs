@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OtpNet;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Domain.Contracts;
@@ -58,5 +59,25 @@ public partial class AdminService : IAdminService
         }, JsonHelper.GetJsonSerializerSettings());
 
         await _iotHubServiceClient.SendIndirectMessageToDevice(device.DeviceName, deviceConfigurationMessageJson);
+    }
+
+    public string GenerateOtp()
+    {
+        string base32Secret = "JBSWY3DPEHPK3PXP"; // Replace with a unique Base32 secret
+
+        int dailyTimeStep = 7200;
+
+        // Convert the Base32 secret key to a byte array
+        byte[] secretKey = Base32Encoding.ToBytes(base32Secret);
+
+        // Create a TOTP instance with a 30-second time step (default for Google Authenticator)
+        var totp = new Totp(secretKey, step: dailyTimeStep);
+
+        // Generate a TOTP code for the current time
+        string otpCode = totp.ComputeTotp();
+        Console.WriteLine($"Generated OTP Code: {otpCode}");
+
+        return otpCode;
+
     }
 }
