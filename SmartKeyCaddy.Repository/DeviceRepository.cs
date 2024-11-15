@@ -9,6 +9,9 @@ namespace SmartKeyCaddy.Repository
     public class DeviceRepository : IDeviceRepository
     {
         private readonly IDBConnectionFactory _dbConnectionFactory;
+
+        private readonly string _deviceQuerybase = @"select deviceid, devicename, serialnumber, bincount, chainid, propertyid, ismasterlocker, isactive, isregistered";
+
         public DeviceRepository(IDBConnectionFactory dbConnectionFactory) 
         {
             _dbConnectionFactory = dbConnectionFactory;
@@ -17,7 +20,7 @@ namespace SmartKeyCaddy.Repository
         public async Task<Device> GetDevice(Guid deviceId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
-            var sql = @$"select deviceid, devicename, serialnumber, bincount, chainid, propertyid, ismasterlocker, isactive, isregistered
+            var sql = @$"{_deviceQuerybase}
 	                    from {Constants.SmartKeyCaddySchemaName}.device where deviceid = @deviceId";
 
             return (await connection.QueryAsync<Device>(sql,
@@ -30,7 +33,7 @@ namespace SmartKeyCaddy.Repository
         public async Task<Device> GetDevice(Guid deviceId, string deviceName)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
-            var sql = @$"select deviceid, devicename, serialnumber, bincount, chainid, propertyid, ismasterlocker, isactive, isregistered
+            var sql = @$"{_deviceQuerybase}
 	                    from {Constants.SmartKeyCaddySchemaName}.device where deviceid = @deviceId and devicename = @deviceName";
 
             return (await connection.QueryAsync<Device>(sql,
@@ -41,16 +44,45 @@ namespace SmartKeyCaddy.Repository
                 })).SingleOrDefault();
         }
 
-        public async Task<List<Device>> GetDevices(Guid locationId)
+        public async Task<List<Bin>> GetDeviceBinDetails(Guid deviceId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
-            var sql = @$"select deviceid, devicecode, devicename, serialnumber, numberofbins, locationid, ismaster, masterdeviceid, chainid
-	                    from {Constants.SmartKeyCaddySchemaName}.device where locationid = @locationId";
+            var sql = @$"select bin.binid
+                            ,bin.status
+                            ,bin.inuse
+                            ,bin.binnumber
+                            ,bin.chainid
+                            ,bin.propertyid
+                            ,bin.createddatetime
+                            ,bin.lastupdateddatetime
+                            ,ka.currentkey
+                        from {Constants.SmartKeyCaddySchemaName}.bin
+                        left join lateral (
+                            select keyname as currentkey
+                            from {Constants.SmartKeyCaddySchemaName}.keyallocation
+                            where keyallocation.binid = bin.binid
+                            order by keyallocation.lastupdateddatetime desc
+                            limit 1
+                        ) ka on true 
+                        inner join {Constants.SmartKeyCaddySchemaName}.device on device.deviceid = bin.deviceid
+                        where device.deviceid = @deviceId";
+
+            return (await connection.QueryAsync<Bin>(sql,
+                new
+                {
+                    deviceId,
+                })).ToList();
+        }
+
+        public async Task<List<Device>> GetDevices(Guid propertyId)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var sql = @$"{_deviceQuerybase} from {Constants.SmartKeyCaddySchemaName}.device where propertyid = @propertyId";
 
             return (await connection.QueryAsync<Device>(sql,
                 new
                 {
-                    locationId
+                    propertyId
                 })).ToList();
         }
 
