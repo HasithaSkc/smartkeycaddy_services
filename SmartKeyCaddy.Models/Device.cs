@@ -10,7 +10,7 @@ public class Device
     public int BinCount { get; set; }
     public Guid PropertyId { get; set; }
     public bool IsActive {  get; set; }
-    public bool IsMaster { get; set; }
+    public bool IsMasterLocker { get; set; }
     public Guid? MasterDeviceId { get; set; }
     public Guid ChainId { get; set; }
     public bool IsRegistered { get; set; }
