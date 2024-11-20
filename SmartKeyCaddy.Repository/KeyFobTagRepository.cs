@@ -25,10 +25,7 @@ namespace SmartKeyCaddy.Repository
                             ,keyfobtag.isactive
                             ,keyfobtag.createddatetime
                             ,keyfobtag.lastupdateddatetime
-                            ,propertyroom.roomnumber
                         from smartkeycaddyuser.keyfobtag
-                        inner join smartkeycaddyuser.propertyroomkeyfobtag on propertyroomkeyfobtag.keyfobtagid = keyfobtag.keyfobtagid
-                        inner join smartkeycaddyuser.propertyroom on propertyroom.propertyroomid = propertyroomkeyfobtag.propertyroomid
                         where keyfobtag.propertyid = @propertyId";
 
             return (await connection.QueryAsync<KeyFobTag>(sql,

@@ -50,6 +50,9 @@ namespace SmartKeyCaddy.Repository
 
             var sql = @$"select 
                              property.propertyid
+                            ,property.chainid
+                            ,property.countryid
+                            ,property.regionid
                             ,property.propertyname
                             ,property.propertycode
                             ,property.propertyshortcode

@@ -4,6 +4,7 @@ public class Device
 {
     public Guid DeviceId { get; set; }
     public string DeviceCode { get; set; }
+    public string DisplayName { get; set; }
     public string DeviceName { get; set; }
     public string SerialNumber { get; set; }
     public int BinCount { get; set; }

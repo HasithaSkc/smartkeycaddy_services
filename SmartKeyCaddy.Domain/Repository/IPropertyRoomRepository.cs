@@ -6,6 +6,8 @@ public interface IPropertyRoomRepository
 {
     Task<List<PropertyRoom>> GetPropertyRooms(Guid propertyId);
     Task<List<PropertyRoom>> GetPropertyRoomKeyFobTags(Guid propertyId);
+    Task<PropertyRoomKeyFobtag> GetPropertyRoomKeyFobTag(Guid propertyId, Guid propertyRoomId);
     Task InsertPropertyRoomKeyFobTag(PropertyRoomKeyFobtag propertyRoomkeyFobTag, Guid propertyId, Guid chainId);
-    Task DeletePropertyRoomKeyFobTags(Guid propertyId);
+    Task UpdatePropertyRoomKeyFobTag(PropertyRoomKeyFobtag propertyRoomkeyFobTag, Guid propertyId);
+    Task DeletePropertyRoomKeyFobTag(Guid propertyId, Guid propertyRoomId);
 }

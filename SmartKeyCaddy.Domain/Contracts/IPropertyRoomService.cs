@@ -6,5 +6,5 @@ public interface IPropertyRoomService
 {
     Task<List<PropertyRoom>> GetPropertyRooms(Guid propertyId);
     Task<List<PropertyRoom>> GetPropertyRoomsKeyFobTags(Guid propertyId);
-    Task InsertPropertyRoomsKeyFobTags(List<PropertyRoomKeyFobtag> propertyRoomKeyFobTags, Guid propertyId);
+    Task InsertOrUpdatePropertyRoomsKeyFobTag(PropertyRoomKeyFobtag propertyRoomkeyFobTag, Guid propertyId);
 }

@@ -13,6 +13,21 @@ namespace SmartKeyCaddy.Repository
             _dbConnectionFactory = dbConnectionFactory;
         }
 
+        public async Task<Bin> GetBin(Guid deviceId, Guid binId)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var sql = @$"select binid,binnumber,binaddress,status,false as inuse,createddatetime,lastupdateddatetime from 
+                        {Constants.SmartKeyCaddySchemaName}.bin  where deviceid = @deviceId and binid =@binId";
+
+            return (await connection.QueryAsync<Bin>(sql,
+            new
+            {
+                deviceId,
+                binId
+            })).SingleOrDefault();
+        }
+
         public async Task<List<Bin>> GetBins(Guid deviceId, bool includeChildBins = true)
         {
             if (!includeChildBins)

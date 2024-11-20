@@ -33,8 +33,8 @@ public class PropertyRoomController : ControllerBase
 
     [HttpPost]
     [Route("keyfobtags/{propertyId:guid}")]
-    public async Task SavePropertyRoomsKeyFobTags(List<PropertyRoomKeyFobtag> propertyRoomkeyFobTags, Guid propertyId)
+    public async Task SavePropertyRoomsKeyFobTags(PropertyRoomKeyFobtag propertyRoomkeyFobTag, Guid propertyId)
     {
-        await _propertyRoomService.InsertPropertyRoomsKeyFobTags(propertyRoomkeyFobTags, propertyId);
+        await _propertyRoomService.InsertOrUpdatePropertyRoomsKeyFobTag(propertyRoomkeyFobTag, propertyId);
     }
 }

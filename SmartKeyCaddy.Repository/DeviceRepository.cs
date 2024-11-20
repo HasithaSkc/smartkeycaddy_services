@@ -10,7 +10,7 @@ namespace SmartKeyCaddy.Repository
     {
         private readonly IDBConnectionFactory _dbConnectionFactory;
 
-        private readonly string _deviceQuerybase = @"select deviceid, devicename, serialnumber, bincount, chainid, propertyid, ismasterlocker, isactive, isregistered";
+        private readonly string _deviceQuerybase = @"select deviceid, devicename, displayname, serialnumber, bincount, chainid, propertyid, ismasterlocker, isactive, isregistered";
 
         public DeviceRepository(IDBConnectionFactory dbConnectionFactory) 
         {

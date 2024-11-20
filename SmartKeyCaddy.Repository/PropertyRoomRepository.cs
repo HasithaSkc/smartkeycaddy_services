@@ -13,21 +13,6 @@ public class PropertyRoomRepository : IPropertyRoomRepository
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<List<PropertyRoom>> GetPropertyRooms1(Guid propertyId)
-    {
-        using var connection = _dbConnectionFactory.CreateConnection();
-
-        var sql = @$"select keyfobtag.keyfobtagid, keyfobtag.keyfobtag, propertyroom.roomnumber, propertyroom.propertyid 
-                        from {Constants.SmartKeyCaddySchemaName}.propertyroom inner join {Constants.SmartKeyCaddySchemaName}.keyfobtag on keyfobtag.propertyroomid = propertyroom.propertyroomid 
-                        where propertyroom.propertyid = @propertyId";
-
-        return (await connection.QueryAsync<PropertyRoom>(sql,
-        new
-        {
-            propertyId
-        })).ToList();
-    }
-
     public async Task<List<PropertyRoom>> GetPropertyRooms(Guid propertyId)
     {
         using var connection = _dbConnectionFactory.CreateConnection();
@@ -91,16 +76,51 @@ public class PropertyRoomRepository : IPropertyRoomRepository
         });
     }
 
-    public async Task DeletePropertyRoomKeyFobTags(Guid propertyId)
+    public async Task DeletePropertyRoomKeyFobTag(Guid propertyId, Guid propertyRoomId)
     {
         using var connection = _dbConnectionFactory.CreateConnection();
 
-        var sql = @$"delete from {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag where propertyid = @PropertyId";
+        var sql = @$"delete from {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag where propertyid = @propertyId
+                     and propertyroomid = @propertyRoomId";
 
         await connection.ExecuteAsync(sql,
         new
         {
-            PropertyId = propertyId
+            propertyId,
+            propertyRoomId
+        });
+    }
+
+    public async Task<PropertyRoomKeyFobtag> GetPropertyRoomKeyFobTag(Guid propertyId, Guid propertyRoomId)
+    {
+        using var connection = _dbConnectionFactory.CreateConnection();
+
+        var sql = @$"select propertyroomid
+                            ,keyfobtagid 
+                        from {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag 
+                        where propertyroomkeyfobtag.propertyid = @propertyId and propertyroomkeyfobtag.propertyroomid = @propertyRoomId";
+
+        return (await connection.QueryAsync<PropertyRoomKeyFobtag>(sql,
+        new
+        {
+            propertyId,
+            propertyRoomId
+        })).SingleOrDefault();
+    }
+
+    public async Task UpdatePropertyRoomKeyFobTag(PropertyRoomKeyFobtag propertyRoomkeyFobTag, Guid propertyId)
+    {
+        using var connection = _dbConnectionFactory.CreateConnection();
+
+        var sql = @$"update {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag
+                    set keyfobtagid = @KeyFobTagId where propertyroomid = @PropertyRoomId and propertyid = @PropertyId";
+
+        await connection.ExecuteAsync(sql,
+        new
+        {
+            PropertyId = propertyId,
+            propertyRoomkeyFobTag.KeyFobTagId,
+            propertyRoomkeyFobTag.PropertyRoomId
         });
     }
 }

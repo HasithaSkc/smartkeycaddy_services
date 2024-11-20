@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
@@ -29,17 +30,25 @@ public partial class PropertyRoomService : IPropertyRoomService
         return await _propertyRoomRepository.GetPropertyRoomKeyFobTags(propertyId);
     }
 
-    public async Task InsertPropertyRoomsKeyFobTags(List<PropertyRoomKeyFobtag> propertyRoomKeyFobTags, Guid propertyId)
+    public async Task InsertOrUpdatePropertyRoomsKeyFobTag(PropertyRoomKeyFobtag propertyRoomkeyFobTag, Guid propertyId)
     {
-        if (!propertyRoomKeyFobTags.Any()) return;
+        if (propertyRoomkeyFobTag == null) return;
 
-        var proeprtyRoomIds = propertyRoomKeyFobTags.Select(room=>room.PropertyRoomId).ToList();
-        await _propertyRoomRepository.DeletePropertyRoomKeyFobTags(propertyId);
-        var property = await _propertyRepository.GetProperty(propertyId);
-
-        foreach (var propertyRoomKeyFobTag in propertyRoomKeyFobTags)
+        if (propertyRoomkeyFobTag.KeyFobTagId == Guid.Empty || propertyRoomkeyFobTag.KeyFobTagId == null)
         {
-            await _propertyRoomRepository.InsertPropertyRoomKeyFobTag(propertyRoomKeyFobTag, property.PropertyId, property.Chain.ChainId);
+            await _propertyRoomRepository.DeletePropertyRoomKeyFobTag(propertyId, propertyRoomkeyFobTag.PropertyRoomId);
+            return;
         }
+
+        var currentPropertyRoomkeyFobTag = await _propertyRoomRepository.GetPropertyRoomKeyFobTag(propertyId, propertyRoomkeyFobTag.PropertyRoomId);
+
+        if (currentPropertyRoomkeyFobTag != null)
+        { 
+            await _propertyRoomRepository.UpdatePropertyRoomKeyFobTag(propertyRoomkeyFobTag, propertyId);
+            return;
+        }
+
+        var property = await _propertyRepository.GetProperty(propertyId);
+        await _propertyRoomRepository.InsertPropertyRoomKeyFobTag(propertyRoomkeyFobTag, propertyId, property.ChainId);
     }
 }

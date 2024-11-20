@@ -5,7 +5,9 @@ using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
+using SmartKeyCaddy.Models.Exceptions;
 using SmartKeyCaddy.Models.Messages;
+using System;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -61,23 +63,23 @@ public partial class AdminService : IAdminService
         await _iotHubServiceClient.SendIndirectMessageToDevice(device.DeviceName, deviceConfigurationMessageJson);
     }
 
-    public string GenerateOtp()
+    public async Task<string> GenerateOfflinePasscode(Guid deviceId, Guid binId)
     {
-        string base32Secret = "JBSWY3DPEHPK3PXP"; // Replace with a unique Base32 secret
+        var bin = await _binRepository.GetBin(deviceId, binId);
 
-        int dailyTimeStep = 7200;
+        if (bin == null)
+            throw new NotFoundException("Bin not found");
 
-        // Convert the Base32 secret key to a byte array
-        byte[] secretKey = Base32Encoding.ToBytes(base32Secret);
+        // Encode the GUID bytes to Base32 using OtpNet
+        string base32Secret = Base32Encoding.ToString(bin.BinId.ToByteArray()).Replace("=","");
 
-        // Create a TOTP instance with a 30-second time step (default for Google Authenticator)
-        var totp = new Totp(secretKey, step: dailyTimeStep);
+        // Decode the Base32 encoded secret key
+        var key = Base32Encoding.ToBytes(base32Secret);
 
-        // Generate a TOTP code for the current time
-        string otpCode = totp.ComputeTotp();
-        Console.WriteLine($"Generated OTP Code: {otpCode}");
+        // Create a TOTP generator
+        var totp = new Totp(key, step: 86400);
 
-        return otpCode;
-
+        // Generate the current TOTP
+        return totp.ComputeTotp(); // Returns the 6-digit TOTP
     }
 }
