@@ -15,4 +15,5 @@ public class KeyFobTag
     public bool IsActive { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public DateTime? LastUpdatedDateTime { get; set; }
+    public bool? IsAssigned { get; set; }
 }

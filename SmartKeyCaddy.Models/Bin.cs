@@ -3,6 +3,7 @@
 public class Bin
 {
     public Guid BinId { get; set; }
+    public Guid DeviceId { get; set; }
     public int BinNumber { get; set; }
     public string BinAddress { get; set; }
     public Guid ChainId { get; set; }

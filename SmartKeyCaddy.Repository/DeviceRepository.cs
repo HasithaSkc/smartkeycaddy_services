@@ -55,6 +55,7 @@ namespace SmartKeyCaddy.Repository
                             ,bin.propertyid
                             ,bin.createddatetime
                             ,bin.lastupdateddatetime
+                            ,bin.deviceid
                             ,ka.currentkey
                         from {Constants.SmartKeyCaddySchemaName}.bin
                         left join lateral (

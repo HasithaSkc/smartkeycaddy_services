@@ -50,6 +50,7 @@ public class PropertyRoomRepository : IPropertyRoomRepository
 
         return (await connection.QueryAsync<PropertyRoom, KeyFobTag, PropertyRoom>(sql,(propertyRoom, keyFobTag) => {
             propertyRoom.KeyFobTag = keyFobTag?.KeyFobTagId == Guid.Empty ? null : keyFobTag;
+
             return propertyRoom;
         },
         new
@@ -122,5 +123,22 @@ public class PropertyRoomRepository : IPropertyRoomRepository
             propertyRoomkeyFobTag.KeyFobTagId,
             propertyRoomkeyFobTag.PropertyRoomId
         });
+    }
+
+    public async Task<PropertyRoom> GetPropertyRoomByKeyFobTag(Guid keyFobTagId, Guid propertyId)
+    {
+        using var connection = _dbConnectionFactory.CreateConnection();
+
+        var sql = @$"select propertyroomid, keyfobtagid 
+                    from {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag
+                        where propertyroomkeyfobtag.keyfobtagid = @keyFobTagId and propertyroomkeyfobtag.propertyid = @propertyId";
+
+        return (await connection.QueryAsync<PropertyRoom>(sql,
+        new
+        {
+            propertyId,
+            keyFobTagId
+        })).SingleOrDefault();
+
     }
 }
