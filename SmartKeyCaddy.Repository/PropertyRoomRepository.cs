@@ -38,6 +38,7 @@ public class PropertyRoomRepository : IPropertyRoomRepository
                             ,keyfobtag.keyfobtagid as keyfobtagkeyfobtagid
                             ,keyfobtag.keyfobtagid
                             ,keyfobtag.keyfobrfid
+                            ,keyfobtag.keyfobtag as KeyFobTagCode
                             ,keyfobtag.isactive
                             ,propertyroomkeyfobtag.createddatetime
                             ,propertyroomkeyfobtag.lastupdateddatetime

@@ -40,7 +40,7 @@ public partial class PropertyRoomService : IPropertyRoomService
             return;
         }
 
-        await ValidatePropertyRoomKeyFob(propertyRoomkeyFobTag.KeyFobTagId.Value, propertyId);
+        await ValidatePropertyRoomKeyFob(propertyRoomkeyFobTag, propertyId);
 
         var currentPropertyRoomkeyFobTag = await _propertyRoomRepository.GetPropertyRoomKeyFobTag(propertyId, propertyRoomkeyFobTag.PropertyRoomId);
 
