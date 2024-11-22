@@ -43,7 +43,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
+      
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
         with:
@@ -52,6 +52,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      # Replace appsettings.json with appsettings.Development.json
+      - name: Overwrite appsettings.json
+        run: |
+          cp appsettings.Development.json appsettings.json
+
+      # Remove appsettings.Development.json and appsettings.Production.json if they exist
+      - name: Clean Up Unnecessary AppSettings
+        run: |
+         rm -f appsettings.Development.json
+         rm -f appsettings.Production.json
+         
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
