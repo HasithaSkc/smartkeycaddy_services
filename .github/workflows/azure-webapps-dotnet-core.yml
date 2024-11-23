@@ -53,12 +53,10 @@ jobs:
             ${{ runner.os }}-nuget-
             
       # Replace appsettings.json with appsettings.Development.json
-      - name: Overwrite appsettings.json
+      - name: Replace appsettings.json
         run: |
           cd ./SmartKeyCaddy.Api
           cp appsettings.Development.json appsettings.json
-          rm -f appsettings.Production.json
-          rm -f appsettings.Local.json
           rm -f appsettings.Development.json
 
       - name: Build with dotnet
