@@ -28,7 +28,12 @@ on:
   # push:
     # branches: [ "prod" ]
   workflow_dispatch:
-
+    inputs:
+      branch:
+        description: "Branch to deploy from"
+        required: true
+        default: "prod"
+  
 permissions:
   contents: read
 
