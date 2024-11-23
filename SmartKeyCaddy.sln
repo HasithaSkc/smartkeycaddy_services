@@ -26,11 +26,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Tests", "Smar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.FunctionApp", "SmartKeyCaddy.FunctionApp\SmartKeyCaddy.FunctionApp.csproj", "{97D97B70-0318-4D15-BDEB-F8E456609DED}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{2613EE99-9DE3-4690-9548-F5EC4196478A}"
-	ProjectSection(SolutionItems) = preProject
-		Workflow-Api.yaml = Workflow-Api.yaml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
