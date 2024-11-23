@@ -51,23 +51,21 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
-
+            
       # Replace appsettings.json with appsettings.Development.json
       - name: Overwrite appsettings.json
         run: |
+          cd ./SmartKeyCaddy.Api
           cp appsettings.Development.json appsettings.json
+          rm -f appsettings.Production.json
+          rm -f appsettings.Local.json
+          rm -f appsettings.Development.json
 
-      # Remove appsettings.Development.json and appsettings.Production.json if they exist
-      - name: Clean Up Unnecessary AppSettings
-        run: |
-         rm -f appsettings.Development.json
-         rm -f appsettings.Production.json
-         
       - name: Build with dotnet
         run: dotnet build --configuration Release
-
+        
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp ./SmartKeyCaddy.Api/SmartKeyCaddy.Api.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -95,5 +93,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_DEV }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
