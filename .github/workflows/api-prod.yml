@@ -17,7 +17,7 @@
 # For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
 
-name: Build and deploy ASP.Net Core app to an Azure Web App
+name: Build and deploy API-Prod
 
 env:
   AZURE_WEBAPP_NAME: 'azu-aue-smartkeycaddy-appservices-api-prod'    # set this to the name of your Azure Web App
@@ -25,10 +25,15 @@ env:
   DOTNET_VERSION: '8'                 # set this to the .NET Core version to use
 
 on:
-  push:
-    branches: [ "prod" ]
+  # push:
+    # branches: [ "prod" ]
   workflow_dispatch:
-
+    inputs:
+      branch:
+        description: "Branch to deploy from"
+        required: true
+        default: "prod"
+  
 permissions:
   contents: read
 

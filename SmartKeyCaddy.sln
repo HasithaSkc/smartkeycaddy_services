@@ -28,7 +28,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.FunctionApp",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{2613EE99-9DE3-4690-9548-F5EC4196478A}"
 	ProjectSection(SolutionItems) = preProject
-		Workflow-Api.yaml = Workflow-Api.yaml
+		.github\workflows\api-dev.yml = .github\workflows\api-dev.yml
+		.github\workflows\api-prod.yml = .github\workflows\api-prod.yml
 	EndProjectSection
 EndProject
 Global
