@@ -19,7 +19,7 @@ public class ServiceBusListner
     }
 
     [Function(nameof(ServiceBusListner))]
-    public async Task Run([ServiceBusTrigger("azu-aue-smartkeycaddy-queue-dev", Connection = "ConnectionString")] ServiceBusReceivedMessage message,
+    public async Task Run([ServiceBusTrigger("%QueueName%", Connection = "ConnectionString")] ServiceBusReceivedMessage message,
         ServiceBusMessageActions messageActions, ILogger log)
     {
         await _serviceBusListener.RegisterMessageHandlerAndReceiveMessages(Encoding.UTF8.GetString(message.Body));
