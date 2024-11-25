@@ -8,6 +8,7 @@ using SmartKeyCaddy.Models.Configurations;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Repository;
+using SmartKeyCaddy.Models.Exceptions;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -15,12 +16,16 @@ public partial class DeviceService : IDeviceService
 {
     private readonly ILogger<IDeviceService> _logger;
     private readonly IDeviceRepository _deviceRepository;
+    private readonly IIotHubServiceClient _iotHubServiceClient;
+
     public DeviceService(
         ILogger<IDeviceService> logger,
-        IDeviceRepository deviceRepository)
+        IDeviceRepository deviceRepository,
+        IIotHubServiceClient iotHubServiceClient)
     {
         _logger = logger;
         _deviceRepository = deviceRepository;
+        _iotHubServiceClient = iotHubServiceClient;
     }
 
     public async Task<List<Device>> GetDevices(Guid propertyId)
@@ -52,5 +57,15 @@ public partial class DeviceService : IDeviceService
     public Task<Guid> UpdateDevice(Device device)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<bool> GetDeviceOnlineStatus(Guid deviceId)
+    {
+        var device = await _deviceRepository.GetDevice(deviceId);
+
+        if (device == null)
+            throw new NotFoundException("Device not found");
+
+        return await _iotHubServiceClient.IsDeviceOnline(device.DeviceName);
     }
 }
