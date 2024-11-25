@@ -58,4 +58,11 @@ public class DeviceController : ControllerBase
     {
         return Ok(await _deviceService.GetDeviceBinDetails(deviceId));
     }
+
+    [HttpGet]
+    [Route("status/{deviceId:guid}")]
+    public async Task<IActionResult> GetDeviceOnlineStatus(Guid deviceId)
+    {
+        return Ok(await _deviceService.GetDeviceOnlineStatus(deviceId));
+    }
 }

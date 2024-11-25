@@ -11,4 +11,5 @@ public interface IDeviceService
     Task<Guid> UpdateDevice(Device device);
     Task<Property> DeleteDevice(Guid deviceId);
     Task<List<Bin>> GetDeviceBinDetails(Guid deviceId);
+    Task<bool> GetDeviceOnlineStatus(Guid deviceId);
 }
