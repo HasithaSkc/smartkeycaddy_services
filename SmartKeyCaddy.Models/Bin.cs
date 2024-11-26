@@ -13,4 +13,5 @@ public class Bin
     public DateTime CreatedDateTime { get; set; }
     public DateTime? LastUpdatedDateTime {  get; set; }
     public string CurrentKey { get; set; }
+    public string KeyAllocationStatus { get; set; }
 }

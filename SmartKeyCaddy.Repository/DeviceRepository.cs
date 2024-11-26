@@ -57,6 +57,7 @@ namespace SmartKeyCaddy.Repository
                             ,bin.lastupdateddatetime
                             ,bin.deviceid
                             ,ka.currentkey
+                            ,ka.status as keyallocationstatus
                         from {Constants.SmartKeyCaddySchemaName}.bin
                         left join lateral (
                             select keyname as currentkey
