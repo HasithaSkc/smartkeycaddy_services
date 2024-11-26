@@ -71,7 +71,7 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
         
-      - name: dotnet publish - WebApi
+      - name: Dotnet publish - WebApi
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/WebApi ./SmartKeyCaddy.Api/SmartKeyCaddy.Api.csproj
 
       - name: Upload artifact for deployment job - WebApi
@@ -80,7 +80,7 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/WebApi
 
-      - name: dotnet publish - FunctionApp
+      - name: Dotnet publish - FunctionApp
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/FunctionApp ./SmartKeyCaddy.FunctionApp/SmartKeyCaddy.FunctionApp.csproj
 
       - name: Upload artifact for deployment job - FunctionApp
@@ -110,7 +110,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_DEV }}
-          package: ${{env.DOTNET_ROOT}}/${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          package: ${{env.DOTNET_ROOT}}/WebApi
 
       - name: Deploy to Azure FunctionApp
         id: deploy-to-functionapp
@@ -118,4 +118,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FUNCTIONAPP_DEV }}
-          package: ${{env.DOTNET_ROOT}}/${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: ${{env.DOTNET_ROOT}}/FunctionApp
