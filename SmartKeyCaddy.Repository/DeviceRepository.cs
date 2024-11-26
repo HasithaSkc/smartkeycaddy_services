@@ -60,7 +60,7 @@ namespace SmartKeyCaddy.Repository
                             ,ka.status as keyallocationstatus
                         from {Constants.SmartKeyCaddySchemaName}.bin
                         left join lateral (
-                            select keyname, status as currentkey
+                            select keyname as currentkey, status
                             from {Constants.SmartKeyCaddySchemaName}.keyallocation
                             where keyallocation.binid = bin.binid
                             order by keyallocation.lastupdateddatetime desc
