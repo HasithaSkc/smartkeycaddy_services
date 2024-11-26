@@ -17,14 +17,17 @@ public partial class DeviceService : IDeviceService
     private readonly ILogger<IDeviceService> _logger;
     private readonly IDeviceRepository _deviceRepository;
     private readonly IIotHubServiceClient _iotHubServiceClient;
+    private readonly IPropertyRepository _propertyRepository;
 
     public DeviceService(
         ILogger<IDeviceService> logger,
         IDeviceRepository deviceRepository,
+        IPropertyRepository propertyRepository,
         IIotHubServiceClient iotHubServiceClient)
     {
         _logger = logger;
         _deviceRepository = deviceRepository;
+        _propertyRepository = propertyRepository;
         _iotHubServiceClient = iotHubServiceClient;
     }
 
@@ -51,7 +54,19 @@ public partial class DeviceService : IDeviceService
     
     public async Task<List<Bin>> GetDeviceBinDetails(Guid deviceId)
     {
-        return await _deviceRepository.GetDeviceBinDetails(deviceId);
+        var device = await _deviceRepository.GetDevice(deviceId);
+
+        if (device == null)
+            throw new NotFoundException("Device not found");
+
+        var property = await _propertyRepository.GetProperty(device.PropertyId);
+
+        if (device == null)
+            throw new NotFoundException("Property not found");
+
+        var localDateTimeNow = CommonFunctions.ConvertToLocalDateTime(DateTime.UtcNow, property.TimeZone);
+
+        return await _deviceRepository.GetDeviceBinDetailsWithKeyAllocation(deviceId, localDateTimeNow);
     }
 
     public Task<Guid> UpdateDevice(Device device)

@@ -62,7 +62,7 @@ namespace SmartKeyCaddy.Repository
                         left join lateral (
                             select keyname as currentkey, status
                             from {Constants.SmartKeyCaddySchemaName}.keyallocation
-                            where keyallocation.binid = bin.binid
+                            where keyallocation.binid = bin.binid and date(keyallocation.checkindate) = '{DateTime.Now.AddHours(-2).ToString(Constants.ShortDateString)}'
                             order by keyallocation.lastupdateddatetime desc
                             limit 1
                         ) ka on true 
@@ -73,6 +73,39 @@ namespace SmartKeyCaddy.Repository
                 new
                 {
                     deviceId,
+                })).ToList();
+        }
+
+        public async Task<List<Bin>> GetDeviceBinDetailsWithKeyAllocation(Guid deviceId, DateTime localDateTime)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var sql = @$"select bin.binid
+                            ,bin.status
+                            ,bin.inuse
+                            ,bin.binnumber
+                            ,bin.chainid
+                            ,bin.propertyid
+                            ,bin.createddatetime
+                            ,bin.lastupdateddatetime
+                            ,bin.deviceid
+                            ,ka.currentkey
+                            ,ka.status as keyallocationstatus
+                        from {Constants.SmartKeyCaddySchemaName}.bin
+                        left join lateral (
+                            select keyname as currentkey, status
+                            from {Constants.SmartKeyCaddySchemaName}.keyallocation
+                            where keyallocation.binid = bin.binid and date(keyallocation.checkindate) = cast(@localDateTime as date)
+                            order by keyallocation.lastupdateddatetime desc
+                            limit 1
+                        ) ka on true 
+                        inner join {Constants.SmartKeyCaddySchemaName}.device on device.deviceid = bin.deviceid
+                        where device.deviceid = @deviceId";
+
+            return (await connection.QueryAsync<Bin>(sql,
+                new
+                {
+                    deviceId,
+                    localDateTime = localDateTime.ToString(Constants.ShortDateString)
                 })).ToList();
         }
 
