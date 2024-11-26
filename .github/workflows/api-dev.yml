@@ -102,6 +102,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: WebApi
+
+      - name: List WebApi files
+        run: |
+          echo "Listing contents of ./WebApi:"
+          ls -R ./WebApi
           
       - name: Download artifact from build job - FunctionApp
         uses: actions/download-artifact@v3
