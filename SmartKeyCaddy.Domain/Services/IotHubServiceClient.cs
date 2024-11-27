@@ -28,6 +28,7 @@ public class IotHubServiceClient : IIotHubServiceClient
 
     public async Task<CloudToDeviceMethodResult> SendDirectMessageToDevice(string deviceName, CloudToDeviceMethod cloudToDeviceMethod)
     {
+        _logger.LogInformation($"Send direct message to device: {deviceName}, payload: {cloudToDeviceMethod.GetPayloadAsJson()}");
         return await _serviceClient.InvokeDeviceMethodAsync(deviceName, cloudToDeviceMethod);
     }
 
