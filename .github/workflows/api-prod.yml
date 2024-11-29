@@ -66,14 +66,23 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
         
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp ./SmartKeyCaddy.Api/SmartKeyCaddy.Api.csproj
+      - name: Dotnet publish - WebApi
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Publish_Output/WebApi ./SmartKeyCaddy.Api/SmartKeyCaddy.Api.csproj
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment job - WebApi
         uses: actions/upload-artifact@v3
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: WebApi
+          path: ${{env.DOTNET_ROOT}}/Publish_Output/WebApi
+
+      - name: Dotnet publish - FunctionApp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Publish_Output/FunctionApp ./SmartKeyCaddy.FunctionApp/SmartKeyCaddy.FunctionApp.csproj
+
+      - name: Upload artifact for deployment job - FunctionApp
+        uses: actions/upload-artifact@v3
+        with:
+          name: FunctionApp
+          path: ${{env.DOTNET_ROOT}}/Publish_Output/FunctionApp
 
   deploy:
     permissions:
@@ -85,15 +94,30 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact from build job - WebApi
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
+          name: WebApi
+          path: ./downloaded-artifacts/WebApi
 
+      - name: Download artifact from build job - FunctionApp
+        uses: actions/download-artifact@v3
+        with:
+          name: FunctionApp
+          path: ./downloaded-artifacts/FunctionApp
+          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_PROD }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          package: ./downloaded-artifacts/WebApi
+
+      - name: Deploy to Azure FunctionApp
+        id: deploy-to-functionapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FUNCTIONAPP_PROD }}
+          package: ./downloaded-artifacts/FunctionApp
