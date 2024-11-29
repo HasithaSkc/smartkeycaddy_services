@@ -102,11 +102,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: WebApi
+          path: ./downloaded-artifacts/WebApi
 
       - name: Download artifact from build job - FunctionApp
         uses: actions/download-artifact@v3
         with:
           name: FunctionApp
+          path: ./downloaded-artifacts/FunctionApp
           
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -114,7 +116,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API_DEV }}
-          package: ./WebApi
+          package: ./downloaded-artifacts/WebApi
 
       - name: Deploy to Azure FunctionApp
         id: deploy-to-functionapp
@@ -122,4 +124,4 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FUNCTIONAPP_DEV }}
-          package: ./FunctionApp
+          package: ./downloaded-artifacts/FunctionApp
