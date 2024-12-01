@@ -179,9 +179,12 @@ public partial class KeyAllocationService : IKeyAllocationService
 
             await InsertKeyTransactionForFromDevice(keyAllocation?.KeyAllocationId, device, keyTransaction);
 
-            if (!(keyTransaction?.BinId.HasValue ?? false)) continue;
+            var binId = keyTransaction?.BinId.HasValue ?? false ? keyTransaction.BinId : 
+                    keyAllocation?.BinId.HasValue ?? false ? keyAllocation?.BinId: null;
 
-            await _binRepository.UpdateBinInUse(keyTransaction.BinId.Value, GetBinInUse(keyTransaction.KeyTransactionType));
+            if (binId == null) continue;
+
+            await _binRepository.UpdateBinInUse(binId.Value, GetBinInUseStatus(keyTransaction.KeyTransactionType));
 
             if (keyAllocation == null) continue;
 

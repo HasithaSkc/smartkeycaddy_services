@@ -201,7 +201,7 @@ public partial class KeyAllocationService
         await _keyTransactionReposiotry.InsertKeyTransaction(keyTransaction);
     }
 
-    private bool GetBinInUse(string status)
+    private bool GetBinInUseStatus(string status)
     {
         var keyAllocationStatus = Enum.Parse(typeof(KeyAllocationStatus), status);
 
