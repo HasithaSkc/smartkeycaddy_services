@@ -57,12 +57,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
             
-      # Replace appsettings.json with appsettings.Development.json
-      - name: Overwrite appsettings.json
-        run: |
-          cd ./SmartKeyCaddy.Api
-          rm -f appsettings.Development.json
-
       - name: Build with dotnet
         run: dotnet build --configuration Release
         
