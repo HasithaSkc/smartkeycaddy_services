@@ -57,6 +57,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
             
+      # Remove appsettings.Development.json - WebApi
+      - name: Overwrite appsettings.json - WebApi
+        run: |
+          cd ./SmartKeyCaddy.Api
+          rm -f appsettings.Development.json
+
+      # Remove appsettings.Development.json - FunctionApp
+      - name: Overwrite appsettings.json - FunctionApp
+        run: |
+          cd ./SmartKeyCaddy.FunctionApp
+          rm -f appsettings.Development.json
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
         
