@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace SmartKeyCaddy.Tests
+﻿namespace SmartKeyCaddy.Tests
 {
     public class Helper
     {

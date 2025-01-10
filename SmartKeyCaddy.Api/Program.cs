@@ -12,7 +12,6 @@ using SmartKeyCaddy.Api.ExceptionHandling;
 using System.Text.Json;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Models.Configurations;
-using HotelCheckIn.Domain.Contracts;
 using Azure.Messaging.ServiceBus;
 
 var logger = new LoggerFactory().CreateLogger<Program>();
@@ -26,6 +25,7 @@ builder.Services.Configure<IotHubSettings>(builder.Configuration.GetSection("Iot
 builder.Services.Configure<AdminFunctionsApiSettings>(builder.Configuration.GetSection("AdminFunctionsApiSettings"));
 builder.Services.Configure<AzureServiceBusSettings>(builder.Configuration.GetSection("AzureServiceBusSettings"));
 builder.Services.Configure<EmailApiSettings>(builder.Configuration.GetSection("EmailApiSettings"));
+builder.Services.Configure<AzureStorageContainerSettings>(builder.Configuration.GetSection("AzureStorageContainerSettings"));
 builder.Services.AddMemoryCache();
 
 builder.Services.AddHostedService<ServiceBusPublisherBackgroundService>();
@@ -66,6 +66,7 @@ builder.Services.AddScoped<IPropertyRoomService, PropertyRoomService>();
 builder.Services.AddScoped<IKeyFobTagService, KeyFobTagService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IStorageContainerService, StorageContainerService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartKeyCaddy.Domain.Contracts;
-using SmartKeyCaddy.Models;
 
 namespace SmartKeyCaddy.Api.Controllers;
 

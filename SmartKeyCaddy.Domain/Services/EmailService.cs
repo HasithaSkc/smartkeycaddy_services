@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Azure.Communication.Email;
 using HotelCheckIn.Domain.Contracts;
-using HotelCheckIn.Models.Configurations;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Configurations;
 using SmartKeyCaddy.Domain.Contracts;

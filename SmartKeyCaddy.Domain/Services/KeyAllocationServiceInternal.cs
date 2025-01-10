@@ -1,10 +1,8 @@
-﻿using Azure;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Models;
-using System.Text.RegularExpressions;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -55,16 +53,6 @@ public partial class KeyAllocationService
         if (!(devices?.Any() ?? false))
             throw new Exception("No devices found");
         return devices.First();
-    }
-
-    private DeviceKeyAllocationResponse GetDeviceKeyAllocationResponse(string responseJson)
-    {
-        var formattedJson = Regex.Unescape(responseJson);
-
-        if (formattedJson.StartsWith("\"") && formattedJson.EndsWith("\""))
-            formattedJson = formattedJson.Substring(1, formattedJson.Length - 2);
-
-        return JsonConvert.DeserializeObject<DeviceKeyAllocationResponse>(formattedJson, JsonHelper.GetJsonSerializerSettings());
     }
 
     private KeyAllocationResponse ConvertToKeyAllocationResponse(List<KeyAllocation> keyAllocation, Device device)

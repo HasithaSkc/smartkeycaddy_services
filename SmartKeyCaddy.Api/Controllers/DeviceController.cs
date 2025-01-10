@@ -65,4 +65,12 @@ public class DeviceController : ControllerBase
     {
         return Ok(await _deviceService.GetDeviceOnlineStatus(deviceId));
     }
+
+    [HttpGet]
+    [Route("log/{deviceId:guid}")]
+    public async Task<IActionResult> GetDeviceLog(Guid deviceId)
+    {
+        var fileContent = await _deviceService.GetDeviceLog(deviceId);
+        return File(fileContent.Item1, "text/plain", $"{fileContent.Item2}-log.txt");
+    }
 }

@@ -1,7 +1,4 @@
-﻿using Dapper;
-using SmartKeyCaddy.Common;
-using SmartKeyCaddy.Domain.Repository;
-using SmartKeyCaddy.Models;
+﻿using SmartKeyCaddy.Domain.Repository;
 
 namespace SmartKeyCaddy.Repository
 {

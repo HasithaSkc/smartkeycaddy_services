@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SixLabors.Fonts;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;

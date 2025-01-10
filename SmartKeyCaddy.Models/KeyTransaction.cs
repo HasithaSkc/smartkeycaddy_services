@@ -1,6 +1,4 @@
-﻿using SmartKeyCaddy.Common;
-
-namespace SmartKeyCaddy.Models;
+﻿namespace SmartKeyCaddy.Models;
 
 public class KeyTransaction
 {

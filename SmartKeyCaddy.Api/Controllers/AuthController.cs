@@ -1,5 +1,4 @@
-﻿using SmartKeyCaddy.Common;
-using SmartKeyCaddy.Models;
+﻿using SmartKeyCaddy.Models;
 using Microsoft.AspNetCore.Mvc;
 using SmartKeyCaddy.Domain.Contracts;
 

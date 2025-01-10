@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using HotelCheckIn.Domain.Contracts;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Domain.Repository;

@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
-using System.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

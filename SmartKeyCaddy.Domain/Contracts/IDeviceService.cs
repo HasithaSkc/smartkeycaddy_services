@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Devices;
-using SmartKeyCaddy.Models;
+﻿using SmartKeyCaddy.Models;
 using Device = SmartKeyCaddy.Models.Device;
 
 namespace SmartKeyCaddy.Domain.Contracts;
@@ -12,4 +11,5 @@ public interface IDeviceService
     Task<Property> DeleteDevice(Guid deviceId);
     Task<List<Bin>> GetDeviceBinDetails(Guid deviceId);
     Task<bool> GetDeviceOnlineStatus(Guid deviceId);
+    Task<Tuple<byte[], string>> GetDeviceLog(Guid deviceId);
 }

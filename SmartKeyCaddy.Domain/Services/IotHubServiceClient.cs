@@ -1,6 +1,4 @@
-﻿using HotelCheckIn.Models.Configurations;
-using Microsoft.Azure.Devices;
-using Microsoft.Azure.Devices.Shared;
+﻿using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SmartKeyCaddy.Domain.Contracts;

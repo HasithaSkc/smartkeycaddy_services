@@ -1,5 +1,4 @@
 ﻿using SmartKeyCaddy.Common;
-using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Messages;
 

@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OtpNet;
-using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models.Exceptions;
 using SmartKeyCaddy.Models.Messages;
-using System;
 
 namespace SmartKeyCaddy.Domain.Services;
 

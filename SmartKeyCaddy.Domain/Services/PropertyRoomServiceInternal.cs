@@ -1,5 +1,4 @@
-﻿using SmartKeyCaddy.Domain.Contracts;
-using SmartKeyCaddy.Models;
+﻿using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Exceptions;
 
 namespace SmartKeyCaddy.Domain.Services;

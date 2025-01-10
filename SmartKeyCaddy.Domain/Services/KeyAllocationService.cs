@@ -8,7 +8,6 @@ using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models;
 using SmartKeyCaddy.Models.Exceptions;
 using SmartKeyCaddy.Models.Messages;
-using System.Transactions;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -73,7 +72,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
                 throw new Exception("Key allocation failed");
 
-            var deviceKeyAllocationResponse = GetDeviceKeyAllocationResponse(deviceToCloudResponse.GetPayloadAsJson());
+            var deviceKeyAllocationResponse = ServiceHelper.GetDeviceKeyAllocationResponse(deviceToCloudResponse.GetPayloadAsJson());
 
             if (!(deviceKeyAllocationResponse?.KeyAllocation?.Any() ?? false))
                 throw new Exception("Key allocation failed");

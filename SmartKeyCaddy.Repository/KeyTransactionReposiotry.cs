@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Repository;
-using SmartKeyCaddy.Domain.Services;
 using SmartKeyCaddy.Models;
 
 namespace SmartKeyCaddy.Repository

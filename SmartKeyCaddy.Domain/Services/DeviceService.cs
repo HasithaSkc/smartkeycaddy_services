@@ -1,14 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Azure.Communication.Email;
-using HotelCheckIn.Domain.Contracts;
-using HotelCheckIn.Models.Configurations;
 using SmartKeyCaddy.Models;
-using SmartKeyCaddy.Models.Configurations;
 using SmartKeyCaddy.Domain.Contracts;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Domain.Repository;
 using SmartKeyCaddy.Models.Exceptions;
+using Microsoft.Azure.Devices;
+using Device = SmartKeyCaddy.Models.Device;
+using System.Text;
 
 namespace SmartKeyCaddy.Domain.Services;
 
@@ -18,17 +16,20 @@ public partial class DeviceService : IDeviceService
     private readonly IDeviceRepository _deviceRepository;
     private readonly IIotHubServiceClient _iotHubServiceClient;
     private readonly IPropertyRepository _propertyRepository;
+    private readonly IStorageContainerService _storageContainerService;
 
     public DeviceService(
         ILogger<IDeviceService> logger,
         IDeviceRepository deviceRepository,
         IPropertyRepository propertyRepository,
-        IIotHubServiceClient iotHubServiceClient)
+        IIotHubServiceClient iotHubServiceClient,
+        IStorageContainerService storageContainerService)
     {
         _logger = logger;
         _deviceRepository = deviceRepository;
         _propertyRepository = propertyRepository;
         _iotHubServiceClient = iotHubServiceClient;
+        _storageContainerService = storageContainerService;
     }
 
     public async Task<List<Device>> GetDevices(Guid propertyId)
@@ -82,5 +83,35 @@ public partial class DeviceService : IDeviceService
             throw new NotFoundException("Device not found");
 
         return await _iotHubServiceClient.IsDeviceOnline(device.DeviceName);
+    }
+
+    public async Task<Tuple<byte[],string>> GetDeviceLog(Guid deviceId)
+    {
+        try
+        {
+            var device = await _deviceRepository.GetDevice(deviceId);
+            var deviceName = device?.DeviceName ?? string.Empty;
+
+            // Invoke the direct method on the device
+            var methodInvocation = new CloudToDeviceMethod(Constants.DeviceLogRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
+            var deviceToCloudResponse = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
+
+            if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
+                throw new Exception("Get device log failed");
+
+            var success = ServiceHelper.DeviceLogResponse(deviceToCloudResponse.GetPayloadAsJson());
+
+            if (!success)
+                throw new Exception("Device log download failed");
+
+            var fileContent = await _storageContainerService.GetBlob(Constants.DeviceLogStorageContainerName, $"{device.DeviceName}.txt");
+
+            return new Tuple<byte[], string>(fileContent, deviceName); 
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Get device log failed");
+            throw;
+        }
     }
 }

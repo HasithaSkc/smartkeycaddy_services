@@ -1,5 +1,4 @@
 ﻿using SmartKeyCaddy.Models;
-using System.Threading.Tasks;
 
 namespace SmartKeyCaddy.Domain.Contracts;
 public interface IPropertyRoomService
