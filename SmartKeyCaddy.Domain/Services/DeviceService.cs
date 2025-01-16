@@ -90,7 +90,14 @@ public partial class DeviceService : IDeviceService
         try
         {
             var device = await _deviceRepository.GetDevice(deviceId);
-            var deviceName = device?.DeviceName ?? string.Empty;
+
+            if (device == null)
+                throw new NotFoundException();
+
+            var deviceName = device.DeviceName;
+
+            if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
+                throw new DeviceOfflineException();
 
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.DeviceLogRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
