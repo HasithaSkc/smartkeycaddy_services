@@ -7,5 +7,5 @@ public interface IAdminService
 {
     Task RegisterDevice(DeviceRegisterMessage registerDeviceMessage);
     Task DisableBin(Guid deviceId, Guid binId);
-    Task<string> GenerateOfflinePasscode(Guid deviceId, Guid binId);
+    Task<string> GenerateOfflinePinCode(Guid deviceId, string roomNumber);
 }

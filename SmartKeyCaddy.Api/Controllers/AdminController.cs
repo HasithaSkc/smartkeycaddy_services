@@ -23,9 +23,9 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet]
-    [Route("offlinepasscode/{deviceId:guid}/{binId:guid}")]
-    public async Task<IActionResult> GenerateOtp(Guid deviceId, Guid binId)
+    [Route("offlinepincode/{deviceId:guid}/{roomNumber}")]
+    public async Task<IActionResult> GenerateOfflinePinCode(Guid deviceId, string roomNumber)
     {
-        return Ok(await _adminService.GenerateOfflinePasscode(deviceId, binId));
+        return Ok(await _adminService.GenerateOfflinePinCode(deviceId, roomNumber));
     }
 }

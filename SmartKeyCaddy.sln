@@ -6,11 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{79F4312F-A1E7-49E1-8A47-0ADB8AD5C780}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C7A1AA9A-3F5B-444C-A96C-5EEC5232FDC2}"
-	ProjectSection(SolutionItems) = preProject
-		Database\Scripts\001.sql = Database\Scripts\001.sql
-		Database\Scripts\002.sql = Database\Scripts\002.sql
-		Database\Scripts\003.sql = Database\Scripts\003.sql
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Api", "SmartKeyCaddy.Api\SmartKeyCaddy.Api.csproj", "{EA1CA619-FD1B-41B7-B855-ACCCF2BE3504}"
 EndProject
@@ -30,6 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\api-dev.yml = .github\workflows\api-dev.yml
 		.github\workflows\api-prod.yml = .github\workflows\api-prod.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OfflineCode", "OfflineCode", "{01C23A00-613C-4200-9D8B-9DA8B08CC7B3}"
+	ProjectSection(SolutionItems) = preProject
+		DbScript.sql = DbScript.sql
 	EndProjectSection
 EndProject
 Global
@@ -72,6 +72,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C7A1AA9A-3F5B-444C-A96C-5EEC5232FDC2} = {79F4312F-A1E7-49E1-8A47-0ADB8AD5C780}
+		{01C23A00-613C-4200-9D8B-9DA8B08CC7B3} = {C7A1AA9A-3F5B-444C-A96C-5EEC5232FDC2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F90E71B2-7292-49B7-8549-BBA79E118233}

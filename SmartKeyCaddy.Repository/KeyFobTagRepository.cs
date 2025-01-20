@@ -26,9 +26,12 @@ namespace SmartKeyCaddy.Repository
                             ,keyfobtag.createddatetime
                             ,keyfobtag.lastupdateddatetime
                             ,(case when propertyroomkeyfobtag.propertyroomid is not null then 1 else 0 end) as isassigned
+                            ,propertyroom.roomnumber
                         from {Constants.SmartKeyCaddySchemaName}.keyfobtag
                         left join {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag
                             on propertyroomkeyfobtag.keyfobtagid = keyfobtag.keyfobtagid
+                        left join {Constants.SmartKeyCaddySchemaName}.propertyroom
+							on propertyroom.propertyroomid = propertyroomkeyfobtag.propertyroomid
                         where keyfobtag.propertyid = @propertyId";
 
             return (await connection.QueryAsync<KeyFobTag>(sql,
