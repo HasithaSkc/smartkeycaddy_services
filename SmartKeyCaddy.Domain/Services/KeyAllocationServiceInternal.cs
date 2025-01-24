@@ -254,10 +254,8 @@ public partial class KeyAllocationService
     {
         var deviceSetting = await _deviceRepository.GetDeviceSetting(device.DeviceId, Constants.KeyAllocationType);
 
-        if (!Enum.TryParse<KeyAllocationType>(deviceSetting?.SettingValue ?? string.Empty, true, out var keyAllocationType))
-            return KeyAllocationType.Managed;
-
-        return keyAllocationType;
+        return (!Enum.TryParse<KeyAllocationType>(deviceSetting?.SettingValue ?? string.Empty, true, out var keyAllocationType)) ? 
+            KeyAllocationType.Managed : keyAllocationType;
     }
 
     private string GetKeyAllocationStatus(KeyAllocationType keyAllocationType, KeyAllocation? keyAllocation)
