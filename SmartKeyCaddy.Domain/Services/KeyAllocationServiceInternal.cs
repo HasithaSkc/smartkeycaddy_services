@@ -160,12 +160,14 @@ public partial class KeyAllocationService
         if (existingKeyAllocation != null)
         {
             keyAllocation.KeyAllocationId = existingKeyAllocation.KeyAllocationId;
+            var exitingKeyAllocationStatus = EnumExtensions.GetEnumValue(existingKeyAllocation?.Status ?? string.Empty, KeyAllocationStatus.KeyCreated);
 
-            //If key already loaded then don't allow to send to the device
-            if (string.Equals(existingKeyAllocation?.Status, KeyAllocationStatus.KeyLoaded.ToString(), StringComparison.OrdinalIgnoreCase))
+            //If key already loaded or dropped off then don't allow to send to the device
+            if (exitingKeyAllocationStatus == KeyAllocationStatus.KeyLoaded || exitingKeyAllocationStatus == KeyAllocationStatus.KeyDroppedOff)
             {
                 keyAllocation.IsSuccessful = false;
-                keyAllocation.Status = KeyAllocationErrorStatus.KeyAlreadyLoaded.ToString();
+                keyAllocation.Status = exitingKeyAllocationStatus == KeyAllocationStatus.KeyLoaded? KeyAllocationErrorStatus.KeyAlreadyLoaded.ToString()
+                    : KeyAllocationErrorStatus.KeyAlreadyDroppedOff.ToString();
                 _logger.LogInformation($"Key: {keyAllocation.KeyName} with status: {keyAllocation.Status} already exists");
             }
             else

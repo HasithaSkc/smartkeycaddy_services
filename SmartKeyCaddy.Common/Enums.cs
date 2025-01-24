@@ -19,7 +19,8 @@ public enum KeyAllocationErrorStatus
 {
     KeyAlreadyExists,
     KeyAlreadyLoaded,
-    KeyFobNotFound
+    KeyFobNotFound,
+    KeyAlreadyDroppedOff
 }
 
 public enum MessageType
