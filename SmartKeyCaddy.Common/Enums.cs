@@ -18,6 +18,7 @@ public enum KeyAllocationStatus
 public enum KeyAllocationErrorStatus
 {
     KeyAlreadyExists,
+    KeyAlreadyLoaded,
     KeyFobNotFound
 }
 
@@ -38,4 +39,11 @@ public enum CommunicationType
     OnlineChekinReminder,
     QrCode,
     KeyPinCode
+}
+
+public enum KeyAllocationType
+{
+    Managed,
+    SelfManaged,
+    Isolated,
 }

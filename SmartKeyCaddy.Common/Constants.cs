@@ -11,5 +11,8 @@
         public const string DeviceLogRequestHandler = "DeviceLogRequestHandler";
         public const string QrCodeFileExtension = "png";
         public const string DeviceLogStorageContainerName = "device-logs";
+
+        //Device Settings
+        public const string KeyAllocationType = "KeyAllocationType";
     }
 }

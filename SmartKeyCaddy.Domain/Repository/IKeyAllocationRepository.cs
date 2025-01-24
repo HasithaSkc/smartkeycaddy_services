@@ -8,8 +8,9 @@ public interface IKeyAllocationRepository
     Task<List<KeyAllocation>> GetKeyAllocations(Guid deviceId);
     Task<KeyAllocation> GetKeyAllocation(Guid keyAllocationId);
     Task InsertkeyAllocation(KeyAllocation keyAllocation);
-    Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName);
+    Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName, Guid propertyId);
     Task UpdateKeyAllocation(KeyAllocation keyAllocation);
     Task<List<KeyAllocation>> GetUnsentKeyAllocations();
     Task UpdateKeyUnsentAllocationStatus(List<Guid> keyAllocationIds, Guid deviceId);
+    Task<KeyAllocation> GetSelfManagedKeyAllocation(Guid propertyId, string roomNumber);
 }

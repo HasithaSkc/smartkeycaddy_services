@@ -91,15 +91,16 @@ namespace SmartKeyCaddy.Repository
             });
         }
 
-        public async Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName)
+        public async Task<KeyAllocation> GetKeyAllocationByKeyName(string keyName, Guid propertyId)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
 
-            var sql = $"{keyAllocationSql} from {Constants.SmartKeyCaddySchemaName}.keyallocation where keyname = @keyName";
+            var sql = $"{keyAllocationSql} from {Constants.SmartKeyCaddySchemaName}.keyallocation where keyname = @keyName and propertyid = @propertyId";
             return (await connection.QueryAsync<KeyAllocation>(sql,
             new
             {
-                keyName
+                keyName,
+                propertyId
             })).SingleOrDefault();
         }
 
@@ -173,6 +174,26 @@ namespace SmartKeyCaddy.Repository
                 keyAllocationIds,
                 deviceId,
                 lastUpdatedDatetime = DateTime.UtcNow
+            });
+        }
+
+        public async Task<KeyAllocation> GetSelfManagedKeyAllocation(Guid propertyId, string roomNumber)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var sql = @$"{keyAllocationSql}
+                        from {Constants.SmartKeyCaddySchemaName}.propertyroom  
+                        inner join {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag on propertyroomkeyfobtag.propertyroomid = propertyroom.propertyroomid
+                        inner join {Constants.SmartKeyCaddySchemaName}.keyfobtag on keyfobtag.keyfobtagid = propertyroomkeyfobtag.keyfobtagid
+                        inner join {Constants.SmartKeyCaddySchemaName}.keyallocation on keyallocation.keyfobtagid = propertyroomkeyfobtag.keyfobtagid
+                        where propertyroom.propertyid = @propertyId and propertyroom.roomnumber = @roomNumber and keyallocation.status = @dropOffStatus";
+
+            return await connection.QuerySingleOrDefaultAsync<KeyAllocation>(sql,
+            new
+            {
+                propertyId,
+                roomNumber,
+                dropOffStatus = KeyAllocationStatus.KeyDroppedOff.ToString()
             });
         }
     }

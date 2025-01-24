@@ -120,17 +120,31 @@ namespace SmartKeyCaddy.Repository
                 })).ToList();
         }
 
-        public async Task<List<DeviceSetting>> GetDeviceSettings(Guid deviceId, Guid propertyId)
+        public async Task<DeviceSetting> GetDeviceSetting(Guid deviceId, string settingName)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
             var sql = @$"select devicesettingid, chainid, propertyid, deviceid, settingname, settingvalue, settingdescription, createddatetime, lastupdateddatetime
-	                    from {Constants.SmartKeyCaddySchemaName}.devicesetting where deviceid = @deviceId and propertyid = @propertyId";
+	                    from {Constants.SmartKeyCaddySchemaName}.devicesetting where deviceid = @deviceId and settingname = @settingName";
+
+            return await connection.QuerySingleOrDefaultAsync<DeviceSetting>(sql,
+                new
+                {
+                    deviceId,
+                    settingName,
+                });
+
+        }
+
+        public async Task<List<DeviceSetting>> GetDeviceSettings(Guid deviceId)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var sql = @$"select devicesettingid, chainid, propertyid, deviceid, settingname, settingvalue, settingdescription, createddatetime, lastupdateddatetime
+	                    from {Constants.SmartKeyCaddySchemaName}.devicesetting where deviceid = @deviceId";
 
             return (await connection.QueryAsync<DeviceSetting>(sql,
                 new
                 {
                     deviceId,
-                    propertyId
                 })).ToList();
         }
 

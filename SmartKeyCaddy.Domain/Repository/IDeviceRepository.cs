@@ -7,7 +7,8 @@ public interface IDeviceRepository
     Task<List<Device>> GetDevices(Guid propertyId);
     Task<Device> GetDevice(Guid deviceId);
     Task<Device> GetDevice(Guid deviceId, string deviceName);
-    Task<List<DeviceSetting>> GetDeviceSettings(Guid deviceId, Guid propertyId);
+    Task<List<DeviceSetting>> GetDeviceSettings(Guid deviceId);
+    Task<DeviceSetting> GetDeviceSetting(Guid deviceId, string settingName);
     Task RegisterDevice(Guid deviceId, bool isRegistered);
     Task<List<Bin>> GetDeviceBinDetails(Guid deviceId);
     Task<List<Bin>> GetDeviceBinDetailsWithKeyAllocation(Guid deviceId, DateTime localDateTime);

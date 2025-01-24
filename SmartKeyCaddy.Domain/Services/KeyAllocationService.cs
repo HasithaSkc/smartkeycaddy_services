@@ -27,8 +27,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         IKeyAllocationRepository keyRepository,
         IPropertyRoomRepository propertyRoomRepository,
         IBinRepository binRepository,
-        IKeyTransactionReposiotry keyTransactionReposiotry,
-        IKeyFobTagRepository keyFobTagRepository)
+        IKeyTransactionReposiotry keyTransactionReposiotry)
     {
         _logger = logger;
         _iotHubServiceClient = iotHubServiceClient;
@@ -46,6 +45,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         if (device == null)
             throw new NotFoundException("Device not found");
 
+
         keyAllocationRequest.DeviceName = device.DeviceName;
 
         var keyAllocationResponse = new KeyAllocationResponse();
@@ -53,24 +53,32 @@ public partial class KeyAllocationService : IKeyAllocationService
 
         try
         {
-            var keyAllocationList = await EnrichKeyAllocationRequest(keyAllocationRequest.KeyAllocation, device);
+            var keyAllocationType = await GetKeyAllocationType(device);
+            var keyAllocationList = await PrepareKeyAllocationRequest(keyAllocationRequest.KeyAllocation, device, keyAllocationType);
 
             if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
             {
                 _logger.LogError($"Device is offline. Creating keys on the server");
-                await InsertOrUpdateKeyAllocationList(keyAllocationList);
+                await InsertOrUpdateKeyAllocationList(keyAllocationList, keyAllocationType, device.PropertyId);
                 return ConvertToKeyAllocationResponse(keyAllocationList, device);
             }
 
-            await ValidateKeyAllocationList(keyAllocationList);
+            await ValidateKeyAllocationList(keyAllocationList, device.PropertyId);
 
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.KeyAllocationRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
-            methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetCloudToDeviceKeyAllocationRequest(keyAllocationList, device, MessageType.DirectKeyAllocation), JsonHelper.GetJsonSerializerSettings()));
+
+            var deviceKeyAllocationList = GetCloudToDeviceKeyAllocationRequest(keyAllocationList, device, MessageType.DirectKeyAllocation);
+
+            // Nothing to send to the device. Return the original list.
+            if (!(deviceKeyAllocationList?.KeyAllocation?.Any() ?? false))
+                return ConvertToKeyAllocationResponse(keyAllocationList, device);
+
+            methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(deviceKeyAllocationList, JsonHelper.GetJsonSerializerSettings()));
             var deviceToCloudResponse = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
 
             if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
-                throw new Exception("Key allocation failed");
+                throw new Exception("Key allocation failed. Invalid device status response.");
 
             var deviceKeyAllocationResponse = ServiceHelper.GetDeviceKeyAllocationResponse(deviceToCloudResponse.GetPayloadAsJson());
 
@@ -89,7 +97,7 @@ public partial class KeyAllocationService : IKeyAllocationService
                     _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}");
                 };
 
-                await InsertOrUpdateKeyAllocation(keyAllocation);
+                await InsertOrUpdateKeyAllocation(keyAllocation, device.PropertyId);
             }
 
             return ConvertToKeyAllocationResponse(keyAllocationList, device);
