@@ -27,7 +27,7 @@ env:
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "feature/offline-keyallocation" ]
   workflow_dispatch:
 
 permissions:
