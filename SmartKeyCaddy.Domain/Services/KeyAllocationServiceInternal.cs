@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Devices;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
@@ -13,18 +12,22 @@ public partial class KeyAllocationService
     private async Task<List<KeyAllocation>> PrepareKeyAllocationRequest(List<KeyAllocationItem> keyAllocationRequestItemList, Device device,
          KeyAllocationType keyAllocationType)
     {
-        var deviceSetting = await _deviceRepository.GetDeviceSetting(device.DeviceId, Constants.KeyAllocationType);
-
-        // Self managed key allcoation
-        if (keyAllocationType == KeyAllocationType.SelfManaged)
+        switch (keyAllocationType)
         {
-            return await PrepareSelfManagedKeyAllocationRequest(keyAllocationRequestItemList, device);
+            case KeyAllocationType.Managed:
+                return await PrepareManagedKeyAllocationRequest(keyAllocationRequestItemList, device);
+            case KeyAllocationType.SelfManaged:
+                return await PrepareSelfManagedKeyAllocationRequest(keyAllocationRequestItemList, device);
+            default:
+                return new List<KeyAllocation>();
         }
+    }
 
-        // Managed key allocation
+    private async Task<List<KeyAllocation>> PrepareManagedKeyAllocationRequest(List<KeyAllocationItem> keyAllocationRequestItemList, Device device)
+    {
         var keyAllocationList = new List<KeyAllocation>();
         var propertyRooms = await _propertyRoomRepository.GetPropertyRoomKeyFobTags(device.PropertyId);
-        
+
         foreach (var keyAllocationRequestItem in keyAllocationRequestItemList)
         {
             var propertyRoom = propertyRooms.SingleOrDefault(room => string.Equals(room.RoomNumber, keyAllocationRequestItem.RoomNumber, StringComparison.OrdinalIgnoreCase));
@@ -61,7 +64,7 @@ public partial class KeyAllocationService
             KeyPickupInstruction = allocatedKey.KeyPickupInstruction,
             CheckInDate = string.IsNullOrEmpty(allocatedKey.CheckInDate) ? null : Convert.ToDateTime(allocatedKey.CheckInDate),
             CheckOutDate = string.IsNullOrEmpty(allocatedKey.CheckOutDate) ? null : Convert.ToDateTime(allocatedKey.CheckOutDate),
-            KeyFobTagId = selfManagedKeyAllocation !=null? selfManagedKeyAllocation.KeyFobTagId: propertyRoom?.KeyFobTag?.KeyFobTagId,
+            KeyFobTagId = selfManagedKeyAllocation != null ? selfManagedKeyAllocation.KeyFobTagId : propertyRoom?.KeyFobTag?.KeyFobTagId,
             BinId = selfManagedKeyAllocation != null ? selfManagedKeyAllocation.BinId : null,
             Status = GetKeyAllocationStatus(KeyAllocationType.SelfManaged, selfManagedKeyAllocation),
             DeviceId = device.DeviceId,
@@ -129,8 +132,8 @@ public partial class KeyAllocationService
 
         if (!keyAllocation.IsSuccessful) return;
 
-        if (existingKeyAllocation !=null)
-             await _keyAllocationRepository.UpdateKeyAllocation(keyAllocation);
+        if (existingKeyAllocation != null)
+            await _keyAllocationRepository.UpdateKeyAllocation(keyAllocation);
         else
             await _keyAllocationRepository.InsertkeyAllocation(keyAllocation);
     }
@@ -184,7 +187,7 @@ public partial class KeyAllocationService
             MessageType = messageType.ToString()
         };
 
-        foreach (var keyAllocation in keyAllocationList.Where(keyAloc=>keyAloc.IsSuccessful))
+        foreach (var keyAllocation in keyAllocationList.Where(keyAloc => keyAloc.IsSuccessful))
         {
             deviceKeyAllocationRequest.KeyAllocation.Add(new DeviceKeyAllocationItem()
             {
@@ -212,7 +215,7 @@ public partial class KeyAllocationService
         keyTransaction.ChainId = device.ChainId;
         keyTransaction.PropertyId = device.PropertyId;
         keyTransaction.DeviceId = device.DeviceId;
-        
+
         await _keyTransactionReposiotry.InsertKeyTransaction(keyTransaction);
     }
 
@@ -251,19 +254,19 @@ public partial class KeyAllocationService
     {
         var deviceSetting = await _deviceRepository.GetDeviceSetting(device.DeviceId, Constants.KeyAllocationType);
 
-        if (!Enum.TryParse<KeyAllocationType>(deviceSetting?.SettingValue ??  string.Empty, true, out var keyAllocationType))
+        if (!Enum.TryParse<KeyAllocationType>(deviceSetting?.SettingValue ?? string.Empty, true, out var keyAllocationType))
             return KeyAllocationType.Managed;
 
         return keyAllocationType;
     }
 
-    private string GetKeyAllocationStatus(KeyAllocationType keyAllocationType, KeyAllocation? keyAllocation) 
+    private string GetKeyAllocationStatus(KeyAllocationType keyAllocationType, KeyAllocation? keyAllocation)
     {
         //If Self managed, check whether you have the binid and status = KeyDroppedOff.
         //If not means that this device is in self managed mode and creating a brand new key
-        var keyAllocationStatus =  keyAllocationType == KeyAllocationType.SelfManaged ? 
-            (keyAllocation?.BinId != null && string.Equals(keyAllocation.Status,KeyAllocationStatus.KeyDroppedOff.ToString(), StringComparison.OrdinalIgnoreCase)) ? 
-            KeyAllocationStatus.KeyLoaded: KeyAllocationStatus.KeyCreated : KeyAllocationStatus.KeyCreated;
+        var keyAllocationStatus = keyAllocationType == KeyAllocationType.SelfManaged ?
+            (keyAllocation?.BinId != null && string.Equals(keyAllocation.Status, KeyAllocationStatus.KeyDroppedOff.ToString(), StringComparison.OrdinalIgnoreCase)) ?
+            KeyAllocationStatus.KeyLoaded : KeyAllocationStatus.KeyCreated : KeyAllocationStatus.KeyCreated;
 
         return keyAllocationStatus.ToString();
     }

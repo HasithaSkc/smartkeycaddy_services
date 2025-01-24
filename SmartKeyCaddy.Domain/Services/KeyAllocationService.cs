@@ -45,7 +45,6 @@ public partial class KeyAllocationService : IKeyAllocationService
         if (device == null)
             throw new NotFoundException("Device not found");
 
-
         keyAllocationRequest.DeviceName = device.DeviceName;
 
         var keyAllocationResponse = new KeyAllocationResponse();
@@ -58,7 +57,7 @@ public partial class KeyAllocationService : IKeyAllocationService
 
             if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
             {
-                _logger.LogError($"Device is offline. Creating keys on the server");
+                _logger.LogError($"Device is offline. Creating keys on the server.");
                 await InsertOrUpdateKeyAllocationList(keyAllocationList, keyAllocationType, device.PropertyId);
                 return ConvertToKeyAllocationResponse(keyAllocationList, device);
             }
@@ -83,7 +82,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             var deviceKeyAllocationResponse = ServiceHelper.GetDeviceKeyAllocationResponse(deviceToCloudResponse.GetPayloadAsJson());
 
             if (!(deviceKeyAllocationResponse?.KeyAllocation?.Any() ?? false))
-                throw new Exception("Key allocation failed");
+                throw new Exception("Key allocation failed.");
 
             foreach (var keyAllocation in keyAllocationList)
             {
@@ -94,7 +93,7 @@ public partial class KeyAllocationService : IKeyAllocationService
                 if (!(allocatedKey?.IsSuccessful ?? false))
                 {
                     keysNotCreated.Add(keyAllocation);
-                    _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}");
+                    _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}.");
                 };
 
                 await InsertOrUpdateKeyAllocation(keyAllocation, device.PropertyId);
@@ -104,7 +103,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Key allocation failed");
+            _logger.LogError(ex, "Key allocation failed.");
             throw;
         }
     }
@@ -114,7 +113,7 @@ public partial class KeyAllocationService : IKeyAllocationService
         var key = await _keyAllocationRepository.GetKeyAllocation(deviceId, keyId);
 
         if (key == null)
-            throw new Exception("Key not found");
+            throw new Exception("Key not found.");
 
         var device = await _deviceRepository.GetDevice(deviceId);
 
@@ -127,13 +126,13 @@ public partial class KeyAllocationService : IKeyAllocationService
             var response = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
 
             if (response == null || response.Status != DeviceResponseStatus.Success)
-                throw new Exception("Failed to delete the key");
+                throw new Exception("Failed to delete the key.");
 
             await _keyAllocationRepository.InsertkeyAllocation(key);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in DeleteKey");
+            _logger.LogError(ex, "Error in DeleteKey.");
             throw;
         }
 
@@ -221,14 +220,14 @@ public partial class KeyAllocationService : IKeyAllocationService
         var device = await _deviceRepository.GetDevice(deviceId);
 
         if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
-            throw new BadRequestException("Device is offline");
+            throw new BadRequestException("Device is offline.");
 
         var methodInvocation = new CloudToDeviceMethod(Constants.ForceBinOpenRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
         methodInvocation.SetPayloadJson(JsonConvert.SerializeObject(GetForceBinOpenRequest(device, binId), JsonHelper.GetJsonSerializerSettings()));
         var deviceToCloudResponse = await _iotHubServiceClient.SendDirectMessageToDevice(device.DeviceName, methodInvocation);
 
         if (deviceToCloudResponse?.Status != DeviceResponseStatus.Success)
-            throw new Exception($"Force bin open failed: {deviceToCloudResponse}");
+            throw new Exception($"Force bin open failed: {deviceToCloudResponse}.");
 
         var binOpenResponse = GetBinOpenResponse(deviceToCloudResponse.GetPayloadAsJson());
 
