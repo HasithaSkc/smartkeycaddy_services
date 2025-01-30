@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C7A1AA9A-3F5B-444C-A96C-5EEC5232FDC2}"
 	ProjectSection(SolutionItems) = preProject
 		Database\Scripts\001.sql = Database\Scripts\001.sql
+		Database\Scripts\DbScript.sql = Database\Scripts\DbScript.sql
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartKeyCaddy.Api", "SmartKeyCaddy.Api\SmartKeyCaddy.Api.csproj", "{EA1CA619-FD1B-41B7-B855-ACCCF2BE3504}"
