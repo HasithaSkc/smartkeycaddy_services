@@ -28,9 +28,9 @@ namespace SmartKeyCaddy.Repository
                             ,(case when propertyroomkeyfobtag.propertyroomid is not null then 1 else 0 end) as isassigned
                             ,propertyroom.roomnumber
                         from {Constants.SmartKeyCaddySchemaName}.keyfobtag
-                        left join {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag
+                        inner join {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag
                             on propertyroomkeyfobtag.keyfobtagid = keyfobtag.keyfobtagid
-                        left join {Constants.SmartKeyCaddySchemaName}.propertyroom
+                        inner join {Constants.SmartKeyCaddySchemaName}.propertyroom
 							on propertyroom.propertyroomid = propertyroomkeyfobtag.propertyroomid
                         where keyfobtag.propertyid = @propertyId";
 
