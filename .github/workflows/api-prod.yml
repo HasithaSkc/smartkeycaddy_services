@@ -76,7 +76,7 @@ jobs:
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Publish_Output/WebApi ./SmartKeyCaddy.Api/SmartKeyCaddy.Api.csproj
 
       - name: Upload artifact for deployment job - WebApi
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: WebApi
           path: ${{env.DOTNET_ROOT}}/Publish_Output/WebApi
@@ -85,7 +85,7 @@ jobs:
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Publish_Output/FunctionApp ./SmartKeyCaddy.FunctionApp/SmartKeyCaddy.FunctionApp.csproj
 
       - name: Upload artifact for deployment job - FunctionApp
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: FunctionApp
           path: ${{env.DOTNET_ROOT}}/Publish_Output/FunctionApp
