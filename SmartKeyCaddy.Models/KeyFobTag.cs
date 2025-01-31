@@ -16,4 +16,5 @@ public class KeyFobTag
     public DateTime CreatedDateTime { get; set; }
     public DateTime? LastUpdatedDateTime { get; set; }
     public bool? IsAssigned { get; set; }
+    public Guid? PropertyRoomId { get; set; }
 }

@@ -27,6 +27,7 @@ namespace SmartKeyCaddy.Repository
                             ,keyfobtag.lastupdateddatetime
                             ,(case when propertyroomkeyfobtag.propertyroomid is not null then 1 else 0 end) as isassigned
                             ,propertyroom.roomnumber
+                            ,propertyroom.propertyroomid
                         from {Constants.SmartKeyCaddySchemaName}.keyfobtag
                         left join {Constants.SmartKeyCaddySchemaName}.propertyroomkeyfobtag
                             on propertyroomkeyfobtag.keyfobtagid = keyfobtag.keyfobtagid
