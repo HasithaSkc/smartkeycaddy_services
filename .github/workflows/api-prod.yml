@@ -101,13 +101,13 @@ jobs:
 
     steps:
       - name: Download artifact from build job - WebApi
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: WebApi
           path: ./downloaded-artifacts/WebApi
 
       - name: Download artifact from build job - FunctionApp
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: FunctionApp
           path: ./downloaded-artifacts/FunctionApp
