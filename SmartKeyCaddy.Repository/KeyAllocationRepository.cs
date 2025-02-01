@@ -59,6 +59,19 @@ namespace SmartKeyCaddy.Repository
             })).ToList();
         }
 
+        public async Task<List<string>> GetExistingKeyPincodes(Guid deviceId, DateTime checkinDate)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var sql = $@"select keypincode from {Constants.SmartKeyCaddySchemaName}.keyallocation where deviceid = @deviceId and date(checkindate) >= @checkinDate";
+            return (await connection.QueryAsync<string>(sql,
+            new
+            {
+                deviceId,
+                checkinDate
+            })).ToList();
+        }
+
         public async Task InsertkeyAllocation(KeyAllocation keyAllocation)
         {
             _logger.LogInformation($"Inserting key allocation: {keyAllocation.KeyName}");

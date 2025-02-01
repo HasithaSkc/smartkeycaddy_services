@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Azure.Devices;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartKeyCaddy.Common;
 using SmartKeyCaddy.Common.JsonHelper;
@@ -116,17 +117,17 @@ public partial class KeyAllocationService
         return keyAllocationResponse;
     }
 
-    private async Task InsertOrUpdateKeyAllocationList(List<KeyAllocation> keyAllocationList, KeyAllocationType keyAllocationType, Guid propertyId)
+    private async Task InsertOrUpdateKeyAllocationList(List<KeyAllocation> keyAllocationList)
     {
         foreach (var keyAllocation in keyAllocationList)
         {
-            await InsertOrUpdateKeyAllocation(keyAllocation, propertyId);
+            await InsertOrUpdateKeyAllocation(keyAllocation);
         }
     }
 
-    private async Task InsertOrUpdateKeyAllocation(KeyAllocation keyAllocation, Guid propertyId)
+    private async Task InsertOrUpdateKeyAllocation(KeyAllocation keyAllocation)
     {
-        var existingKeyAllocation = await _keyAllocationRepository.GetKeyAllocationByKeyName(keyAllocation.KeyName, propertyId);
+        var existingKeyAllocation = await _keyAllocationRepository.GetKeyAllocationByKeyName(keyAllocation.KeyName, keyAllocation.PropertyId);
 
         ValidateKeyAllocation(keyAllocation, existingKeyAllocation);
 
@@ -138,17 +139,22 @@ public partial class KeyAllocationService
             await _keyAllocationRepository.InsertkeyAllocation(keyAllocation);
     }
 
-    private async Task ValidateKeyAllocationList(List<KeyAllocation> keyAllocationList, Guid propertyId)
+    private async Task ValidateKeyAllocationList(List<KeyAllocation> keyAllocationList, Device device)
     {
+        if (!(keyAllocationList?.Any() ?? false))
+            return;
+
+        await GenerateKeyPincodeIfNotExists(keyAllocationList, device);
+
         foreach (var keyAllocation in keyAllocationList)
         {
-            var existingKeyAllocation = await _keyAllocationRepository.GetKeyAllocationByKeyName(keyAllocation.KeyName, propertyId);
+            var existingKeyAllocation = await _keyAllocationRepository.GetKeyAllocationByKeyName(keyAllocation.KeyName, device.PropertyId);
 
             ValidateKeyAllocation(keyAllocation, existingKeyAllocation);
         }
     }
 
-    private void ValidateKeyAllocation(KeyAllocation keyAllocation, KeyAllocation existingKeyAllocation)
+    private async void ValidateKeyAllocation(KeyAllocation keyAllocation, KeyAllocation existingKeyAllocation)
     {
         if (keyAllocation.KeyFobTagId == null)
         {
@@ -172,10 +178,10 @@ public partial class KeyAllocationService
             }
             else
                 keyAllocation.IsSuccessful = true;
-
             return;
         }
 
+        
         keyAllocation.IsSuccessful = true;
     }
 
@@ -269,5 +275,42 @@ public partial class KeyAllocationService
             KeyAllocationStatus.KeyLoaded : KeyAllocationStatus.KeyCreated : KeyAllocationStatus.KeyCreated;
 
         return keyAllocationStatus.ToString();
+    }
+
+    private async Task SyncKeyAllocationListWithDeviceResponse(List<KeyAllocation> keyAllocationList, DeviceKeyAllocationResponse deviceKeyAllocationResponse)
+    {
+        foreach (var keyAllocation in keyAllocationList)
+        {
+            var allocatedKey = deviceKeyAllocationResponse.KeyAllocation.SingleOrDefault(keyResponse => string.Equals(keyAllocation.KeyName, keyResponse.KeyName, StringComparison.OrdinalIgnoreCase));
+            keyAllocation.IsSuccessful = allocatedKey?.IsSuccessful ?? false;
+            keyAllocation.Status = allocatedKey?.Status ?? string.Empty;
+            keyAllocation.IsMessageSent = keyAllocation.IsSuccessful;
+
+            if (!(allocatedKey?.IsSuccessful ?? false))
+            {
+                _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}.");
+            };
+
+            await InsertOrUpdateKeyAllocation(keyAllocation);
+        }
+    }
+
+    private async Task GenerateKeyPincodeIfNotExists(List<KeyAllocation> keyAllocationList, Device device)
+    {
+        if (!keyAllocationList.Any(key => string.IsNullOrEmpty(key.KeyPinCode)))
+            return;
+
+        var chekinDate = keyAllocationList.Where(res => res.CheckInDate.HasValue).Min(res => res.CheckInDate);
+
+        if (chekinDate == null) return;
+
+        var exitingKeyPincodes = await _keyAllocationRepository.GetExistingKeyPincodes(device.DeviceId, chekinDate.Value);
+        exitingKeyPincodes = exitingKeyPincodes ?? new List<string>();
+
+        foreach (var keyAllocation in keyAllocationList)
+        {
+            var keyPinCode = CommonFunctions.GenerateRandomKeyCode(exitingKeyPincodes, Constants.SmartKeyCaddyKeyPinCodeNoOfDigits);
+            exitingKeyPincodes.Add(keyPinCode);
+        }
     }
 }

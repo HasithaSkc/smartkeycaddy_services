@@ -11,6 +11,7 @@
         public const string DeviceLogRequestHandler = "DeviceLogRequestHandler";
         public const string QrCodeFileExtension = "png";
         public const string DeviceLogStorageContainerName = "device-logs";
+        public const int SmartKeyCaddyKeyPinCodeNoOfDigits = 6;
 
         //Device Settings
         public const string KeyAllocationType = "KeyAllocationType";

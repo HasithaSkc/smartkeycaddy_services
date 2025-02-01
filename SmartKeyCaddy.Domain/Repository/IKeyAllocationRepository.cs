@@ -13,4 +13,5 @@ public interface IKeyAllocationRepository
     Task<List<KeyAllocation>> GetUnsentKeyAllocations();
     Task UpdateKeyUnsentAllocationStatus(List<Guid> keyAllocationIds, Guid deviceId);
     Task<KeyAllocation> GetSelfManagedKeyAllocation(Guid propertyId, string roomNumber);
+    Task<List<string>> GetExistingKeyPincodes(Guid deviceId, DateTime checkinDate);
 }

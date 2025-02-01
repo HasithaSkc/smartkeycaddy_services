@@ -40,29 +40,25 @@ public partial class KeyAllocationService : IKeyAllocationService
 
     public async Task<KeyAllocationResponse> CreateKeyAllocation(KeyAllocationRequest keyAllocationRequest)
     {
-        var device = await _deviceRepository.GetDevice(keyAllocationRequest.DeviceId);
-
-        if (device == null)
-            throw new NotFoundException("Device not found");
-
-        keyAllocationRequest.DeviceName = device.DeviceName;
-
-        var keyAllocationResponse = new KeyAllocationResponse();
-        var keysNotCreated = new List<KeyAllocation>();
-
         try
         {
+            var device = await _deviceRepository.GetDevice(keyAllocationRequest.DeviceId);
+
+            if (device == null)
+                throw new NotFoundException("Device not found");
+
+            keyAllocationRequest.DeviceName = device.DeviceName;
             var keyAllocationType = await GetKeyAllocationType(device);
             var keyAllocationList = await PrepareKeyAllocationRequest(keyAllocationRequest.KeyAllocation, device, keyAllocationType);
+
+            await ValidateKeyAllocationList(keyAllocationList, device);
 
             if (!await _iotHubServiceClient.IsDeviceOnline(device.DeviceName))
             {
                 _logger.LogError($"Device is offline. Creating keys on the server.");
-                await InsertOrUpdateKeyAllocationList(keyAllocationList, keyAllocationType, device.PropertyId);
+                await InsertOrUpdateKeyAllocationList(keyAllocationList);
                 return ConvertToKeyAllocationResponse(keyAllocationList, device);
             }
-
-            await ValidateKeyAllocationList(keyAllocationList, device.PropertyId);
 
             // Invoke the direct method on the device
             var methodInvocation = new CloudToDeviceMethod(Constants.KeyAllocationRequestHandler) { ResponseTimeout = TimeSpan.FromSeconds(20) };
@@ -84,20 +80,7 @@ public partial class KeyAllocationService : IKeyAllocationService
             if (!(deviceKeyAllocationResponse?.KeyAllocation?.Any() ?? false))
                 throw new Exception("Key allocation failed.");
 
-            foreach (var keyAllocation in keyAllocationList)
-            {
-                var allocatedKey = deviceKeyAllocationResponse.KeyAllocation.SingleOrDefault(keyResponse => string.Equals(keyAllocation.KeyName, keyResponse.KeyName, StringComparison.OrdinalIgnoreCase));
-                keyAllocation.IsSuccessful = allocatedKey?.IsSuccessful ?? false;
-                keyAllocation.Status = allocatedKey?.Status ?? string.Empty;
-                keyAllocation.IsMessageSent = keyAllocation.IsSuccessful;
-                if (!(allocatedKey?.IsSuccessful ?? false))
-                {
-                    keysNotCreated.Add(keyAllocation);
-                    _logger.LogError($"Unable to create the requested key {keyAllocation.KeyName} on device. Status: {allocatedKey?.Status}.");
-                };
-
-                await InsertOrUpdateKeyAllocation(keyAllocation, device.PropertyId);
-            }
+            await SyncKeyAllocationListWithDeviceResponse(keyAllocationList, deviceKeyAllocationResponse);
 
             return ConvertToKeyAllocationResponse(keyAllocationList, device);
         }

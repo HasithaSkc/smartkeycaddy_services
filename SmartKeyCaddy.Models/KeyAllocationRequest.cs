@@ -4,6 +4,7 @@ public class KeyAllocationRequest
 {
     public Guid DeviceId { get; set; }
     public string DeviceName { get; set; } = string.Empty;
+    public bool GeneratePincode { get; set; }
     public List<KeyAllocationItem> KeyAllocation { get; set; }
 }
 
